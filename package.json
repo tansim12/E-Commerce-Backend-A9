@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
- "scripts": {
+  "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "start": "node ./dist/server.js",
     "build": "tsc",
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.0.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
@@ -21,7 +21,7 @@
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.16",
-    "prisma": "^5.22.0",
+    "prisma": "^6.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
