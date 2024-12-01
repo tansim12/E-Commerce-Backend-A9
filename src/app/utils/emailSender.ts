@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import dotenv from 'dotenv';
+import config from "../config";
 dotenv.config()
 export const emailSender = async (to: string, html: string) => {
 const transporter = nodemailer.createTransport({
@@ -8,15 +9,15 @@ const transporter = nodemailer.createTransport({
     secure: process.env.NODE_ENV === 'production',
     auth: {
      
-      user: 'tansimahmedtasjid@gmail.com',
-      pass: 'vwev axgg fnpf gsbq',
+      user: config.emailSender.email,
+      pass: config.emailSender.app_pass,
     },
   });
 
   await transporter.sendMail({
-    from: 'tansimahmedtasjid@gmail.com', // sender address
+    from: config.emailSender.email, // sender address
     to, // list of receivers
-    subject: 'Tech & Tips Forget Password within 10 mins!', // Subject line
+    subject: 'PH health care forget password within 10 mins!', // Subject line
     text: 'Forget Password', // plain text body
     html, // html body
   });
