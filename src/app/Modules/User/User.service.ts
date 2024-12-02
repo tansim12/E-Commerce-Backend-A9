@@ -6,6 +6,7 @@ import { paginationHelper } from "../../helper/paginationHelper";
 import { userSearchAbleFields } from "./User.const";
 
 import { StatusCodes } from "http-status-codes";
+import AppError from "../../Error-Handler/AppError";
 
 const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
@@ -22,7 +23,6 @@ const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
       })),
     });
   }
-  console.log(searchTerm);
 
   if (Object.keys(filterData).length > 0) {
     andCondition.push({
@@ -42,7 +42,6 @@ const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
       email: true,
       createdAt: true,
       id: true,
-      needPasswordChange: true,
       status: true,
       isDelete: true,
       role: true,
@@ -74,43 +73,38 @@ const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
   };
 };
 
+// const adminUpdateUserDB = async (
+//   tokenId: string,
+//   userId: string,
+//   payload: any
+// ) => {
+//   await prisma.user.findUniqueOrThrow({
+//     where: {
+//       id: tokenId,
+//       isDelete: false,
+//       status: UserStatus.active,
+//     },
+//   });
 
+//   const result = await prisma.user.update({
+//     where: {
+//       id: userId,
+//     },
+//     data: payload,
+//     select: {
+//       id: true,
+//     },
+//   });
 
-
-
-const adminUpdateUserDB = async (
-  tokenId: string,
-  userId: string,
-  payload: any
-) => {
-  await prisma.user.findUniqueOrThrow({
-    where: {
-      id: tokenId,
-      isDelete: false,
-      status: UserStatus.ACTIVE,
-    },
-  });
-
-  const result = await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: payload,
-    select: {
-      id: true,
-    },
-  });
-
-  return result;
-};
+//   return result;
+// };
 
 const findMyProfileDB = async (tokenId: string, role: string) => {
   const user = await prisma.user.findUniqueOrThrow({
-    where: { id: tokenId, isDelete: false, status: UserStatus.ACTIVE },
+    where: { id: tokenId, isDelete: false, status: UserStatus.active },
     select: {
       id: true,
       email: true,
-      needPasswordChange: true,
       status: true,
       isDelete: true,
       role: true,
@@ -119,70 +113,30 @@ const findMyProfileDB = async (tokenId: string, role: string) => {
     },
   });
 
-  let userProfile = {};
-
-  if (role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN) {
-    userProfile = await prisma.admin.findUniqueOrThrow({
-      where: { email: user.email },
-    });
-  }
-
-  if (role === UserRole.PATIENT) {
-    userProfile = await prisma.patient.findUniqueOrThrow({
-      where: { email: user.email },
-    });
-  }
-  if (role === UserRole.DOCTOR) {
-    userProfile = await prisma.doctor.findUniqueOrThrow({
-      where: { email: user.email },
-    });
-  }
-
-  return { ...userProfile, ...user };
+  return user;
 };
 const updateMyProfileDB = async (tokenId: string, role: string, body: any) => {
   const user = await prisma.user.findUniqueOrThrow({
-    where: { id: tokenId, isDelete: false, status: UserStatus.ACTIVE },
+    where: { id: tokenId, isDelete: false, status: UserStatus.active },
   });
 
   if (body.status || body.role) {
-    throw new ApiError(
+    throw new AppError(
       StatusCodes.BAD_REQUEST,
       "You can't change role and status"
     );
   }
 
-  let userProfile = {};
-
-  if (role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN) {
-    userProfile = await prisma.admin.update({
-      where: { email: user.email },
-      data: body,
-    });
-  }
-
-  if (role === UserRole.PATIENT) {
-    userProfile = await prisma.patient.update({
-      where: { email: user.email },
-      data: body,
-    });
-  }
-  if (role === UserRole.DOCTOR) {
-    userProfile = await prisma.doctor.update({
-      where: { email: user.email },
-      data: body,
-    });
-  }
+  let userProfile = await prisma.userProfile.update({
+    where: { email: user.email },
+    data: body,
+  });
 
   return userProfile;
 };
 export const userService = {
   getAllUsersDB,
-  createUserDB,
-  adminCreateDB,
-  createDoctorDB,
-  createPatientDB,
-  adminUpdateUserDB,
+  // adminUpdateUserDB,
   findMyProfileDB,
   updateMyProfileDB,
 };
