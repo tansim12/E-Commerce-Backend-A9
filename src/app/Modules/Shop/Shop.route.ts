@@ -15,10 +15,16 @@ router.post(
 router.get("/", shopController.findAllShopPublic);
 router.get("/:shopId", shopController.findSingleShopPublic);
 router.post(
-  "/user/following",
+  "/user/shop-following",
   validationMiddleWare(shopFollowSchema.createShopFollowSchema),
   authMiddleWare(UserRole.admin, UserRole.user, UserRole.vendor),
   shopController.shopFollowing
+);
+router.put(
+  "/user/shop-review",
+  validationMiddleWare(shopFollowSchema.createShopReviewSchema),
+  authMiddleWare(UserRole.admin, UserRole.user, UserRole.vendor),
+  shopController.shopReview
 );
 
 export const shopRouter = router;

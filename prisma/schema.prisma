@@ -26,7 +26,7 @@ model User {
   updatedAt          DateTime      @updatedAt
   userProfile        UserProfile[]
   shop               Shop?
-  shopReview         ShopReview?
+  shopReview         ShopReview[]
   shopFollow         ShopFollow[]
 
   @@map("users")
@@ -50,50 +50,51 @@ model UserProfile {
 }
 
 model Shop {
-  id            String      @id @default(uuid())
+  id            String       @id @default(uuid())
   name          String
-  vendorId      String      @unique
-  vendor        User        @relation(fields: [vendorId], references: [id])
+  vendorId      String       @unique
+  vendor        User         @relation(fields: [vendorId], references: [id])
   description   String?
-  averageRating Int         @default(0)
-  isDelete      Boolean     @default(false)
+  averageRating Int          @default(0)
+  isDelete      Boolean      @default(false)
   logo          String?
   shopType      String?
   address       String?
   contactNumber String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  shopReview    ShopReview?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  shopReview    ShopReview[]
   shopFollow    ShopFollow[]
 
   @@map("shops")
 }
 
 model ShopReview {
-  id        String   @id @default(uuid())
-  userId    String   @unique
+  userId    String   
   user      User     @relation(fields: [userId], references: [id])
-  shopId    String   @unique
+  shopId    String   
   shop      Shop     @relation(fields: [shopId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  details  String?
-  rating   String?
+  details  String
+  rating   Int?
   isDelete Boolean @default(false)
 
+  @@id([userId, shopId])
   @@map("shopReviews")
 }
 
 model ShopFollow {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  shopId    String   
+  shopId    String
   shop      Shop     @relation(fields: [shopId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  isDelete Boolean @default(false)
-  @@id([userId,shopId])
+  isDelete  Boolean  @default(false)
+
+  @@id([userId, shopId])
   @@map("shopFollows")
 }
 

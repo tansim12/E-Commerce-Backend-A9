@@ -139,8 +139,6 @@ const shopFollowingDB = async (tokenUser: any, payload: any) => {
       status: UserStatus.active,
     },
   });
-  console.log(userInfo.id);
-  console.log(payload);
 
   if (payload?.isDelete === false) {
     const result = await prisma.shopFollow.upsert({
@@ -173,10 +171,52 @@ const shopFollowingDB = async (tokenUser: any, payload: any) => {
     return result;
   }
 };
+const shopReviewDB = async (tokenUser: any, payload: any) => {
+  const userInfo = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: tokenUser.id,
+      isDelete: false,
+      status: UserStatus.active,
+    },
+  });
+
+
+  if (payload?.isDelete === false) {
+    const result = await prisma.shopReview.upsert({
+      where: {
+        userId_shopId: {
+          shopId: payload?.shopId,
+          userId: userInfo?.id,
+        },
+      },
+      update: {
+        ...payload,
+        userId: userInfo?.id,
+      },
+      create: {
+        ...payload,
+        userId: userInfo?.id,
+      },
+    });
+    return result;
+  }
+  if (payload?.isDelete === true) {
+    const result = await prisma.shopReview.delete({
+      where: {
+        userId_shopId: {
+          shopId: payload?.shopId,
+          userId: userInfo?.id,
+        },
+      },
+    });
+    return result;
+  }
+};
 
 export const shopService = {
   crateShopDB,
   findAllShopPublicDB,
   findSingleShopPublicDB,
   shopFollowingDB,
+  shopReviewDB,
 };
