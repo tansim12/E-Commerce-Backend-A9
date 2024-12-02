@@ -19,6 +19,7 @@ const signUp: RequestHandler = async (req, res, next) => {
       successResponse(
         {
           accessToken: result.accessToken,
+          refreshToken,
         },
         StatusCodes.OK,
         "Signup successfully!"
@@ -42,6 +43,7 @@ const loginUser: RequestHandler = async (req, res, next) => {
       successResponse(
         {
           accessToken: result.accessToken,
+          refreshToken,
         },
         StatusCodes.OK,
         "Logged in successfully!"
