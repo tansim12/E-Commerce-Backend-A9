@@ -15,12 +15,28 @@ const createShop: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const findSingleShopPublic: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await shopService.findSingleShopPublicDB(
+      req?.params?.shopId
+    );
+    res.send(
+      successResponse(
+        result,
+        StatusCodes.OK,
+        "Single Shop find successfully done"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 const findAllShopPublic: RequestHandler = async (req, res, next) => {
   try {
     const filters = pick(req.query, shopFilterAbleFields);
     const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
     const result = await shopService.findAllShopPublicDB(filters, options);
-    res.send(successResponse(result, StatusCodes.OK, "find all user"));
+    res.send(successResponse(result, StatusCodes.OK, "Find all Shop"));
   } catch (error) {
     next(error);
   }
@@ -28,4 +44,5 @@ const findAllShopPublic: RequestHandler = async (req, res, next) => {
 export const shopController = {
   createShop,
   findAllShopPublic,
+  findSingleShopPublic,
 };

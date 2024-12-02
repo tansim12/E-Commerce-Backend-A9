@@ -53,7 +53,17 @@ const findSingleShopPublicDB = async (shopId: string) => {
     },
     include: {
       shopReview: true,
-      vendor: true,
+      vendor: {
+        select: {
+          name: true,
+          email: true,
+          userProfile: {
+            select: {
+              profilePhoto: true,
+            },
+          },
+        },
+      },
     },
   });
   return result;
@@ -125,4 +135,5 @@ const findAllShopPublicDB = async (
 export const shopService = {
   crateShopDB,
   findAllShopPublicDB,
+  findSingleShopPublicDB,
 };
