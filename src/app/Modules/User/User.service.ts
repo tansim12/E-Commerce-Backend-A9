@@ -11,18 +11,25 @@ import AppError from "../../Error-Handler/AppError";
 const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = queryObj;
+  console.log(searchTerm);
 
   const andCondition = [];
   if (queryObj.searchTerm) {
     andCondition.push({
-      OR: userSearchAbleFields.map((field) => ({
-        [field]: {
-          contains: queryObj.searchTerm,
-          mode: "insensitive",
+      userProfile: {
+        // ! nested query এর জন্য some করে দিতে হবে must na hole kaj korbe na
+        some: {
+          OR: userSearchAbleFields.map((field) => ({
+            [field]: {
+              contains: queryObj.searchTerm,
+              mode: "insensitive",
+            },
+          })),
         },
-      })),
+      },
     });
   }
+  console.log(andCondition);
 
   if (Object.keys(filterData).length > 0) {
     andCondition.push({
@@ -34,7 +41,7 @@ const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
     });
   }
 
-  const whereConditions: Prisma.UserWhereInput = { AND: andCondition };
+  const whereConditions: Prisma.UserWhereInput = { AND: andCondition as any };
 
   const result = await prisma.user.findMany({
     where: whereConditions,
@@ -46,6 +53,7 @@ const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
       isDelete: true,
       role: true,
       updatedAt: true,
+      userProfile: true,
     },
     skip,
     take: limit,
@@ -99,9 +107,13 @@ const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
 //   return result;
 // };
 
-const findMyProfileDB = async (tokenId: string, role: string) => {
+const findMyProfileDB = async (tokenUser: any) => {
   const user = await prisma.user.findUniqueOrThrow({
-    where: { id: tokenId, isDelete: false, status: UserStatus.active },
+    where: {
+      email: tokenUser?.email,
+      isDelete: false,
+      status: UserStatus.active,
+    },
     select: {
       id: true,
       email: true,
@@ -110,14 +122,19 @@ const findMyProfileDB = async (tokenId: string, role: string) => {
       role: true,
       createdAt: true,
       updatedAt: true,
+      userProfile: true,
     },
   });
 
   return user;
 };
-const updateMyProfileDB = async (tokenId: string, role: string, body: any) => {
+const updateMyProfileDB = async (tokenUser: any, body: any) => {
   const user = await prisma.user.findUniqueOrThrow({
-    where: { id: tokenId, isDelete: false, status: UserStatus.active },
+    where: {
+      email: tokenUser.email,
+      isDelete: false,
+      status: UserStatus.active,
+    },
   });
 
   if (body.status || body.role) {

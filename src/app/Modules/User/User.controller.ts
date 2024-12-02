@@ -42,10 +42,7 @@ const getAllUsers: RequestHandler = async (req, res, next) => {
 // };
 const findMyProfile: RequestHandler = async (req, res, next) => {
   try {
-    const result = await userService.findMyProfileDB(
-      req?.user.id,
-      req?.user.role
-    );
+    const result = await userService.findMyProfileDB(req?.user);
     res.send(
       successResponse(
         result,
@@ -58,15 +55,10 @@ const findMyProfile: RequestHandler = async (req, res, next) => {
   }
 };
 const updateMyProfile: RequestHandler = async (req, res, next) => {
-  let userData = req.body;
-  if (req?.file?.path) {
-    userData = { ...userData, profilePhoto: req.file.path };
-  }
   try {
     const result = await userService.updateMyProfileDB(
-      req?.user.id,
-      req?.user.role,
-      userData
+      req?.user,
+      req.body
     );
     res.send(
       successResponse(

@@ -2,12 +2,6 @@ import express from "express";
 import { userController } from "./User.controller";
 
 import { UserRole } from "@prisma/client";
-
-import { multerUpload } from "../../config/multer.config";
-import validationMiddleWare from "../../middleware/validationMiddleWare";
-// import { adminZodValidation } from "../Admin/Admin.ZodValidation";
-import { userZodValidation } from "./User.ZodValidation";
-import { jsonDataSetMiddleware } from "../../middleware/jsonDataSetMiddleware";
 import { authMiddleWare } from "../../middleware/authMiddleware";
 const router = express.Router();
 
@@ -30,8 +24,7 @@ router.get(
 );
 router.put(
   "/update-my-profile",
-  multerUpload.single("image"),
-  jsonDataSetMiddleware,
+
   authMiddleWare(UserRole.user, UserRole.admin, UserRole.vendor),
   userController.updateMyProfile
 );
