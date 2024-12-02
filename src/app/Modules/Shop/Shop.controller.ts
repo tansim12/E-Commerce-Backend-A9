@@ -41,8 +41,24 @@ const findAllShopPublic: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+const shopFollowing: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await shopService.shopFollowingDB(req?.user, req?.body);
+    res.send(
+      successResponse(
+        result,
+        StatusCodes.OK,
+        "Single Shop find successfully done"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 export const shopController = {
   createShop,
   findAllShopPublic,
   findSingleShopPublic,
+  shopFollowing,
 };

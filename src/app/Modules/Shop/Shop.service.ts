@@ -1,7 +1,5 @@
 import { Prisma, UserRole, UserStatus } from "@prisma/client";
 import prisma from "../../shared/prisma";
-import AppError from "../../Error-Handler/AppError";
-import { StatusCodes } from "http-status-codes";
 import { IPaginationOptions } from "../../interface/pagination";
 import { paginationHelper } from "../../helper/paginationHelper";
 import { shopSearchAbleFields } from "./Shop.const";
@@ -44,6 +42,7 @@ const crateShopDB = async (tokenUser: any, payload: any) => {
   return result;
 };
 
+// todo
 const findSingleShopPublicDB = async (shopId: string) => {
   // todo include added product,followers etc
   const result = await prisma.shop.findUniqueOrThrow({
@@ -132,8 +131,52 @@ const findAllShopPublicDB = async (
   };
 };
 
+const shopFollowingDB = async (tokenUser: any, payload: any) => {
+  const userInfo = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: tokenUser.id,
+      isDelete: false,
+      status: UserStatus.active,
+    },
+  });
+  console.log(userInfo.id);
+  console.log(payload);
+
+  if (payload?.isDelete === false) {
+    const result = await prisma.shopFollow.upsert({
+      where: {
+        userId_shopId: {
+          shopId: payload?.shopId,
+          userId: userInfo?.id,
+        },
+      },
+      update: {
+        ...payload,
+        userId: userInfo?.id,
+      },
+      create: {
+        ...payload,
+        userId: userInfo?.id,
+      },
+    });
+    return result;
+  }
+  if (payload?.isDelete === true) {
+    const result = await prisma.shopFollow.delete({
+      where: {
+        userId_shopId: {
+          shopId: payload?.shopId,
+          userId: userInfo?.id,
+        },
+      },
+    });
+    return result;
+  }
+};
+
 export const shopService = {
   crateShopDB,
   findAllShopPublicDB,
   findSingleShopPublicDB,
+  shopFollowingDB,
 };
