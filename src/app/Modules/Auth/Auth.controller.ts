@@ -21,7 +21,7 @@ const signUp: RequestHandler = async (req, res, next) => {
           accessToken: result.accessToken,
         },
         StatusCodes.OK,
-        "Logged in successfully!"
+        "Signup successfully!"
       )
     );
   } catch (error) {
