@@ -56,10 +56,7 @@ const findMyProfile: RequestHandler = async (req, res, next) => {
 };
 const updateMyProfile: RequestHandler = async (req, res, next) => {
   try {
-    const result = await userService.updateMyProfileDB(
-      req?.user,
-      req.body
-    );
+    const result = await userService.updateMyProfileDB(req?.user, req.body);
     res.send(
       successResponse(
         result,
@@ -71,9 +68,24 @@ const updateMyProfile: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const getSingleUser: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await userService.getSingleUserDB(req?.params?.userId);
+    res.send(
+      successResponse(
+        result,
+        StatusCodes.OK,
+        "Single user data get successfully done"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 export const userController = {
   getAllUsers,
   // adminUpdateUser,
   findMyProfile,
   updateMyProfile,
+  getSingleUser,
 };

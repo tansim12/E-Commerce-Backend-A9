@@ -10,6 +10,7 @@ const router = express.Router();
 //   jsonDataSetMiddleware,
 
 router.get("/", authMiddleWare(UserRole.admin), userController.getAllUsers);
+router.get("/:userId", userController.getSingleUser);
 
 // router.put(
 //   "/update-info/:userId",
@@ -18,7 +19,7 @@ router.get("/", authMiddleWare(UserRole.admin), userController.getAllUsers);
 //   userController.adminUpdateUser
 // );
 router.get(
-  "/my-profile",
+  "/find/my-profile",
   authMiddleWare(UserRole.user, UserRole.admin, UserRole.vendor),
   userController.findMyProfile
 );

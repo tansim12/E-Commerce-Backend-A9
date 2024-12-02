@@ -37,6 +37,7 @@ const singUpDB = async (body: Prisma.UserCreateInput) => {
 
   const accessToken = jwtHelpers.generateToken(
     {
+      id: result.id,
       email: result?.email,
       role: result?.role,
     },
@@ -45,10 +46,7 @@ const singUpDB = async (body: Prisma.UserCreateInput) => {
   );
 
   const refreshToken = jwtHelpers.generateToken(
-    {
-      email: result?.email,
-      role: result?.role,
-    },
+    { id: result.id, email: result?.email, role: result?.role },
     config.jwt.refresh_token_secret as string,
     config.jwt.refresh_token_expires_in as string
   );
@@ -75,16 +73,14 @@ const loginUser = async (payload: { email: string; password: string }) => {
     throw new AppError(StatusCodes.NOT_ACCEPTABLE, "Password incorrect!");
   }
   const accessToken = jwtHelpers.generateToken(
-    {
-      email: userData.email,
-      role: userData.role,
-    },
+    { id: userData.id, email: userData.email, role: userData.role },
     config.jwt.jwt_secret as string,
     config.jwt.expires_in as string
   );
 
   const refreshToken = jwtHelpers.generateToken(
     {
+      id: userData.id,
       email: userData.email,
       role: userData.role,
     },
@@ -117,6 +113,7 @@ const refreshToken = async (token: string) => {
 
   const accessToken = jwtHelpers.generateToken(
     {
+      id: userData.id,
       email: userData.email,
       role: userData.role,
     },
@@ -172,7 +169,7 @@ const forgotPasswordDB = async (payload: { email: string }) => {
   });
 
   const resetPassToken = jwtHelpers.generateToken(
-    { email: userData.email, role: userData.role },
+    { id: userData.id, email: userData.email, role: userData.role },
     config.jwt.reset_pass_secret as string,
     config.jwt.reset_pass_token_expires_in as string
   );

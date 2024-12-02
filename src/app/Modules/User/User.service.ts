@@ -108,7 +108,7 @@ const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
 // };
 
 const findMyProfileDB = async (tokenUser: any) => {
-  const user = await prisma.user.findUniqueOrThrow({
+  const user = await prisma.user.findUnique({
     where: {
       email: tokenUser?.email,
       isDelete: false,
@@ -151,9 +151,32 @@ const updateMyProfileDB = async (tokenUser: any, body: any) => {
 
   return userProfile;
 };
+const getSingleUserDB = async (paramsId: string) => {
+  const result = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: paramsId,
+      isDelete: false,
+      status: UserStatus.active,
+    },
+    select: {
+      email: true,
+      id: true,
+      role: true,
+      name: true,
+      isDelete: true,
+      createdAt: true,
+      lastPasswordChange: true,
+      status: true,
+      updatedAt: true,
+      userProfile: true,
+    },
+  });
+  return result;
+};
 export const userService = {
   getAllUsersDB,
   // adminUpdateUserDB,
   findMyProfileDB,
   updateMyProfileDB,
+  getSingleUserDB,
 };
