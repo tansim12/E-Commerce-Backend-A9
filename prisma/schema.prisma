@@ -51,11 +51,12 @@ model Shop {
   id            String      @id @default(uuid())
   name          String
   vendorId      String      @unique
-  user          User @relation(fields: [vendorId], references: [id])
+  vendor          User @relation(fields: [vendorId], references: [id])
   description   String?
   averageRating Int         @default(0)
   isDelete      Boolean     @default(false)
   logo          String?
+  shopType      String?
   address       String?
   contactNumber String?
   createdAt          DateTime      @default(now())

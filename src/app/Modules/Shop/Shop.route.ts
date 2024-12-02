@@ -10,5 +10,9 @@ router.post(
   authMiddleWare(UserRole.admin, UserRole.vendor),
   shopController.createShop
 );
+router.get(
+  "/",
+  shopController.findAllShopPublic
+);
 
 export const shopRouter = router;

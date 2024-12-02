@@ -1,3 +1,5 @@
 
 
 // todo admin update user profile
+
+// findSingleShopPublicDB এই function এ আরও optimize korete hobe যেমন ঃ include review + products + vendor
