@@ -25,7 +25,8 @@ model User {
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   userProfile        UserProfile[]
-
+  shop          Shop?
+    shopReview    ShopReview?
   @@map("users")
 }
 
@@ -40,8 +41,8 @@ model UserProfile {
   gender        Gender?
   contactNumber String?
   status        UserStatus  @default(active)
-  shop          Shop?
-  shopReview    ShopReview?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt 
 
   @@map("userProfiles")
 }
@@ -50,15 +51,15 @@ model Shop {
   id            String      @id @default(uuid())
   name          String
   vendorId      String      @unique
-  user          UserProfile @relation(fields: [vendorId], references: [id])
+  user          User @relation(fields: [vendorId], references: [id])
   description   String?
   averageRating Int         @default(0)
   isDelete      Boolean     @default(false)
   logo          String?
   address       String?
   contactNumber String?
-  createdAt     DateTime
-  updatedAt     DateTime
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt 
   shopReview    ShopReview?
 
   @@map("shops")
@@ -67,9 +68,11 @@ model Shop {
 model ShopReview {
   id     String      @id @default(uuid())
   userId String      @unique
-  user   UserProfile @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
   shopId String      @unique
   shop   Shop        @relation(fields: [shopId], references: [id])
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 
   details  String?
   rating   String?
