@@ -3,7 +3,31 @@ import { Request, RequestHandler, Response } from "express";
 import { AuthServices } from "./Auth.service";
 import { successResponse } from "../../Re-useable/successResponse";
 import { StatusCodes } from "http-status-codes";
+import config from "../../config";
 
+const signUp: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await AuthServices.singUpDB(req.body);
+
+    const { refreshToken } = result;
+
+    res.cookie("refreshToken", refreshToken, {
+      secure: config.env === "production",
+      httpOnly: true,
+    });
+    res.send(
+      successResponse(
+        {
+          accessToken: result.accessToken,
+        },
+        StatusCodes.OK,
+        "Logged in successfully!"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 const loginUser: RequestHandler = async (req, res, next) => {
   try {
     const result = await AuthServices.loginUser(req.body);
@@ -11,14 +35,13 @@ const loginUser: RequestHandler = async (req, res, next) => {
     const { refreshToken } = result;
 
     res.cookie("refreshToken", refreshToken, {
-      secure: false,
+      secure: config.env === "production",
       httpOnly: true,
     });
     res.send(
       successResponse(
         {
           accessToken: result.accessToken,
-          needPasswordChange: result.needPasswordChange,
         },
         StatusCodes.OK,
         "Logged in successfully!"
@@ -68,7 +91,11 @@ const resetPassword: RequestHandler = async (req, res, next) => {
 
     const result = await AuthServices.resetPasswordDB(token, req?.body);
     res.send(
-      successResponse(result, StatusCodes.OK, "Password Change Successfully done")
+      successResponse(
+        result,
+        StatusCodes.OK,
+        "Password Change Successfully done"
+      )
     );
   } catch (error) {
     next(error);
@@ -76,6 +103,7 @@ const resetPassword: RequestHandler = async (req, res, next) => {
 };
 
 export const AuthController = {
+  signUp,
   loginUser,
   refreshToken,
   forgotPassword,

@@ -9,7 +9,7 @@ import { emailSender } from "../../utils/emailSender";
 import { jwtHelpers } from "../../helper/jwtHelpers";
 import AppError from "../../Error-Handler/AppError";
 
-const createUserDB = async (body: Prisma.UserCreateInput) => {
+const singUpDB = async (body: Prisma.UserCreateInput) => {
   const hashPass = await bcrypt.hash(body?.password, 12);
   const userData = {
     name: body?.name,
@@ -22,15 +22,40 @@ const createUserDB = async (body: Prisma.UserCreateInput) => {
       data: userData,
     });
 
-    const usrProfileData = await tnx.userProfile.create({
+    await tnx.userProfile.create({
       data: {
         email: userInfo.email,
         userId: userInfo.id,
       },
     });
-    return usrProfileData;
+    return userInfo;
   });
-  return result;
+
+  if (!result) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "Something went wrong !");
+  }
+
+  const accessToken = jwtHelpers.generateToken(
+    {
+      email: result?.email,
+      role: result?.role,
+    },
+    config.jwt.jwt_secret as string,
+    config.jwt.expires_in as string
+  );
+
+  const refreshToken = jwtHelpers.generateToken(
+    {
+      email: result?.email,
+      role: result?.role,
+    },
+    config.jwt.refresh_token_secret as string,
+    config.jwt.refresh_token_expires_in as string
+  );
+  return {
+    accessToken,
+    refreshToken,
+  };
 };
 
 const loginUser = async (payload: { email: string; password: string }) => {
@@ -212,6 +237,7 @@ const resetPasswordDB = async (
 };
 
 export const AuthServices = {
+  singUpDB,
   loginUser,
   refreshToken,
   forgotPasswordDB,

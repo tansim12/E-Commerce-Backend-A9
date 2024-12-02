@@ -1,11 +1,10 @@
-export type TerrorSources = {
-    path: string | number;
-    message: string;
-  }[];
-  
-  export type TGenericErrorResponse = {
-    statusCode: number;
-    message: string;
-    errorSources: TerrorSources;
-  };
-  
+
+import { JwtPayload } from 'jsonwebtoken';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: JwtPayload;
+    }
+  }
+}
