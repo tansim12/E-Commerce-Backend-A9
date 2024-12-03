@@ -28,6 +28,8 @@ model User {
   shop               Shop?
   shopReview         ShopReview[]
   shopFollow         ShopFollow[]
+  category           Category[]
+  subCategory        SubCategory[]
 
   @@map("users")
 }
@@ -65,14 +67,15 @@ model Shop {
   updatedAt     DateTime     @updatedAt
   shopReview    ShopReview[]
   shopFollow    ShopFollow[]
+  product       Product[]
 
   @@map("shops")
 }
 
 model ShopReview {
-  userId    String   
+  userId    String
   user      User     @relation(fields: [userId], references: [id])
-  shopId    String   
+  shopId    String
   shop      Shop     @relation(fields: [shopId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -96,6 +99,64 @@ model ShopFollow {
 
   @@id([userId, shopId])
   @@map("shopFollows")
+}
+
+model Category {
+  id           String        @id @default(uuid())
+  categoryName String        @unique
+  adminId      String
+  admin        User          @relation(fields: [adminId], references: [id])
+  isDelete     Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  subCategory  SubCategory[]
+  product      Product?
+
+  @@map("categories")
+}
+
+model SubCategory {
+  id           String   @id @default(uuid())
+  categoryName String   @unique
+  adminId      String
+  admin        User     @relation(fields: [adminId], references: [id])
+  categoryId   String
+  category     Category @relation(fields: [categoryId], references: [id])
+  isDelete     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  product      Product?
+
+  @@map("subCategories")
+}
+
+model Product {
+  id            String  @id @default(uuid())
+  productName   String
+  quantity      Int     @default(1)
+  isAvailable   Boolean @default(true)
+  totalBuy      Int     @default(0)
+  price         Int
+  discount      Int?
+  promo         String?
+  isActivePromo Boolean @default(false)
+  isFlashSaleOffer Boolean @default(false)
+  shopId        String
+  shop          Shop    @relation(fields: [shopId], references: [id])
+  description   String
+  totalSubmitRating Int @default(0)
+  averageRating Int     @default(0)
+
+  images        String[]
+  categoryId    String      @unique
+  category      Category    @relation(fields: [categoryId], references: [id])
+  subCategoryId String      @unique
+  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
+  isDelete      Boolean
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("products")
 }
 
 enum UserRole {
