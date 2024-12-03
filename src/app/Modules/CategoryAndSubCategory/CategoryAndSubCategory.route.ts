@@ -15,5 +15,11 @@ router.post(
   authMiddleWare(UserRole.admin),
   categoryAndSubCategoryController.createCategory
 );
+router.post(
+  "/create-sub-category",
+  validationMiddleWare(categoryAndSubCategorySchema.createSubCategorySchema),
+  authMiddleWare(UserRole.admin),
+  categoryAndSubCategoryController.createSubCategory
+);
 
 export const categoryAndSubCategoryRouter = router;
