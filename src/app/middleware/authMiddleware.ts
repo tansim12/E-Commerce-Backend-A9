@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import { StatusCodes } from "http-status-codes";
 
 import prisma from "../shared/prisma";
-import {  UserRole, } from "@prisma/client";
+import { UserRole, UserStatus } from "@prisma/client";
 
 import config from "../config";
 import AppError from "../Error-Handler/AppError";
@@ -38,6 +38,8 @@ export const authMiddleWare = (...requiredRoles: UserRole[]) => {
       const user = await prisma.user.findUniqueOrThrow({
         where: {
           email,
+          isDelete: false,
+          status: UserStatus.active,
         },
       });
 
