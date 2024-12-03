@@ -30,7 +30,7 @@ const updateCategory: RequestHandler = async (req, res, next) => {
       successResponse(
         result,
         StatusCodes.OK,
-        "Category Create successfully done"
+        "Category update successfully done"
       )
     );
   } catch (error) {
@@ -55,7 +55,26 @@ const createSubCategory: RequestHandler = async (req, res, next) => {
   }
 };
 
+const updateSubCategory: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await categoryAndSubCategoryService.updateSubCategoryDB(
+      req?.params?.subCategoryId,
+      req?.body
+    );
+    res.send(
+      successResponse(
+        result,
+        StatusCodes.OK,
+        "Sub Category update successfully done"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 export const categoryAndSubCategoryController = {
   createCategory,
-  createSubCategory,updateCategory
+  createSubCategory,
+  updateCategory,
+  updateSubCategory,
 };

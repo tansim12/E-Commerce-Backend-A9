@@ -17,7 +17,7 @@ router.post(
 );
 router.put(
   "/update-category/:categoryId",
-  validationMiddleWare(categoryAndSubCategorySchema.createCategorySchema),
+  validationMiddleWare(categoryAndSubCategorySchema.updateCategorySchema),
   authMiddleWare(UserRole.admin),
   categoryAndSubCategoryController.updateCategory
 );
@@ -27,5 +27,10 @@ router.post(
   authMiddleWare(UserRole.admin),
   categoryAndSubCategoryController.createSubCategory
 );
-
+router.put(
+  "/update-sub-category/:subCategoryId",
+  validationMiddleWare(categoryAndSubCategorySchema.createCategorySchema),
+  authMiddleWare(UserRole.admin),
+  categoryAndSubCategoryController.updateSubCategory
+);
 export const categoryAndSubCategoryRouter = router;
