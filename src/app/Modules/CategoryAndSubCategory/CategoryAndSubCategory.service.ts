@@ -49,6 +49,18 @@ const createSubCategoryDB = async (tokenUser: any, payload: TCategory) => {
       },
     },
   });
+  const isDeleteCategory = await prisma.category.findUnique({
+    where: {
+      id: payload.categoryId,
+      isDelete: true,
+    },
+  });
+  if (isDeleteCategory) {
+    throw new AppError(
+      StatusCodes.NOT_ACCEPTABLE,
+      "This Category already Delete"
+    );
+  }
   if (isExistCategory) {
     throw new AppError(
       StatusCodes.NOT_ACCEPTABLE,
