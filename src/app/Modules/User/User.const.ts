@@ -1,4 +1,4 @@
-export const userSearchAbleFields: string[] = ["email", "contactNumber"];
+export const userSearchAbleFields: string[] = ["email", "name",];
 export const userFilterAbleFields: string[] = [
   "role",
   "status",

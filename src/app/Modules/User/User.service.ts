@@ -11,26 +11,18 @@ import AppError from "../../Error-Handler/AppError";
 const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = queryObj;
-  console.log(searchTerm);
 
   const andCondition = [];
   if (queryObj.searchTerm) {
     andCondition.push({
-      userProfile: {
-        // ! nested query এর জন্য some করে দিতে হবে must na hole kaj korbe na
-        some: {
-          OR: userSearchAbleFields.map((field) => ({
-            [field]: {
-              contains: queryObj.searchTerm,
-              mode: "insensitive",
-            },
-          })),
+      OR: userSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: queryObj.searchTerm,
+          mode: "insensitive",
         },
-      },
+      })),
     });
   }
-  console.log(andCondition);
-
   if (Object.keys(filterData).length > 0) {
     andCondition.push({
       AND: Object.keys(filterData).map((key) => ({
@@ -47,6 +39,7 @@ const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
     where: whereConditions,
     select: {
       email: true,
+      name: true,
       createdAt: true,
       id: true,
       status: true,
