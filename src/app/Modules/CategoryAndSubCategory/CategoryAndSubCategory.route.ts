@@ -15,6 +15,12 @@ router.post(
   authMiddleWare(UserRole.admin),
   categoryAndSubCategoryController.createCategory
 );
+router.put(
+  "/update-category/:categoryId",
+  validationMiddleWare(categoryAndSubCategorySchema.createCategorySchema),
+  authMiddleWare(UserRole.admin),
+  categoryAndSubCategoryController.updateCategory
+);
 router.post(
   "/create-sub-category",
   validationMiddleWare(categoryAndSubCategorySchema.createSubCategorySchema),

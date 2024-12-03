@@ -31,6 +31,35 @@ const createCategoryDB = async (tokenUser: any, payload: TCategory) => {
   });
   return result;
 };
+const updateCategoryDB = async (categoryId: any, payload: TCategory) => {
+  const { categoryName, ...newPayload } = payload;
+  const isExistCategory = await prisma.category.findFirst({
+    where: {
+      categoryName: {
+        contains: payload?.categoryName,
+        mode: "insensitive",
+      },
+    },
+  });
+  if (isExistCategory) {
+    throw new AppError(
+      StatusCodes.NOT_ACCEPTABLE,
+      "This Category already exist"
+    );
+  }
+  const categoryNameFormate = formatCategoryName(categoryName);
+
+  const result = await prisma.category.update({
+    where: {
+      id: categoryId,
+    },
+    data: {
+      ...newPayload,
+      categoryName: categoryNameFormate,
+    },
+  });
+  return result;
+};
 const createSubCategoryDB = async (tokenUser: any, payload: TCategory) => {
   const { categoryName } = payload;
   const isExistCategory = await prisma.category.findFirst({
@@ -88,4 +117,5 @@ const createSubCategoryDB = async (tokenUser: any, payload: TCategory) => {
 export const categoryAndSubCategoryService = {
   createCategoryDB,
   createSubCategoryDB,
+  updateCategoryDB,
 };
