@@ -6,7 +6,11 @@ import bodyParser from "body-parser";
 const normalMiddleware = (app: Application) => {
   app.use(
     cors({
-      origin: ["http://localhost:3000", "http://localhost:3001"],
+      origin: [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "https://e-commerce-a9.vercel.app",
+      ],
       credentials: true,
     })
   );
