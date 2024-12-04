@@ -101,9 +101,9 @@ const findAllSubCategory: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
-const adminFindAllCategory: RequestHandler = async (req, res, next) => {
+const existFindAllCategory: RequestHandler = async (req, res, next) => {
   try {
-    const result = await categoryAndSubCategoryService.adminFindAllCategoryDB();
+    const result = await categoryAndSubCategoryService.existFindAllCategoryDB();
     res.send(
       successResponse(
         result,
@@ -122,5 +122,5 @@ export const categoryAndSubCategoryController = {
   updateSubCategory,
   findAllCategory,
   findAllSubCategory,
-  adminFindAllCategory,
+  existFindAllCategory,
 };

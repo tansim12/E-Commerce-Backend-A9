@@ -327,7 +327,7 @@ const findAllSubCategoryDB = async (
   };
 };
 
-const adminFindAllCategoryDB = async () => {
+const existFindAllCategoryDB = async () => {
   const result = await prisma.category.findMany({
     where: {
       isDelete: false,
@@ -350,5 +350,5 @@ export const categoryAndSubCategoryService = {
   updateSubCategoryDB,
   findAllCategoryDB,
   findAllSubCategoryDB,
-  adminFindAllCategoryDB,
+  existFindAllCategoryDB,
 };
