@@ -3,6 +3,8 @@ import { userController } from "./User.controller";
 
 import { UserRole } from "@prisma/client";
 import { authMiddleWare } from "../../middleware/authMiddleware";
+import validationMiddleWare from "../../middleware/validationMiddleWare";
+import { userZodValidation } from "./User.ZodValidation";
 const router = express.Router();
 
 //! upload file
@@ -25,9 +27,14 @@ router.get(
 );
 router.put(
   "/update-my-profile",
-
   authMiddleWare(UserRole.user, UserRole.admin, UserRole.vendor),
   userController.updateMyProfile
+);
+router.put(
+  "/admin-update-user/:userId",
+  validationMiddleWare(userZodValidation.updateUserZodSchema),
+  authMiddleWare(UserRole.admin),
+  userController.adminUpdateUser
 );
 
 export const userRouter = router;

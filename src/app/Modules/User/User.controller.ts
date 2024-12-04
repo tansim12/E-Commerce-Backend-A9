@@ -22,24 +22,23 @@ const getAllUsers: RequestHandler = async (req, res, next) => {
 // }
 
 //!todo  পরে update এর কাজ করবো
-// const adminUpdateUser: RequestHandler = async (req, res, next) => {
-//   try {
-//     const result = await userService.adminUpdateUserDB(
-//       req?.user.id,
-//       req?.params?.userId,
-//       req.body
-//     );
-//     res.send(
-//       successResponse(
-//         result,
-//         StatusCodes.OK,
-//         "User Info update successfully done"
-//       )
-//     );
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+const adminUpdateUser: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await userService.adminUpdateUserDB(
+      req?.params?.userId,
+      req.body
+    );
+    res.send(
+      successResponse(
+        result,
+        StatusCodes.OK,
+        "User Info update successfully done"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 const findMyProfile: RequestHandler = async (req, res, next) => {
   try {
     const result = await userService.findMyProfileDB(req?.user);
@@ -84,7 +83,7 @@ const getSingleUser: RequestHandler = async (req, res, next) => {
 };
 export const userController = {
   getAllUsers,
-  // adminUpdateUser,
+  adminUpdateUser,
   findMyProfile,
   updateMyProfile,
   getSingleUser,

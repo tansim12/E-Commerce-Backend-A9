@@ -74,33 +74,35 @@ const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
   };
 };
 
-const adminUpdateUserDB = async (
-  tokenId: string,
-  userId: string,
-  payload: any
-) => {
-  await prisma.user.findUniqueOrThrow({
-    where: {
-      id: tokenId,
-      isDelete: false,
-      status: UserStatus.active,
-    },
-  });
-
-  const result = await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: payload,
-    select: {
-      id: true,
-      email: true,
-      isDelete: true,
-      role: true,
-      status: true,
-
-      updatedAt: true,
-    },
+const adminUpdateUserDB = async (userId: string, payload: any) => {
+  if (payload?.email|| payload.password) {
+    throw new AppError(StatusCodes.NOT_ACCEPTABLE, "You Can't change email or password");
+  }
+  const result = await prisma.$transaction(async (tx) => {
+    const userInfo = await tx.user.update({
+      where: {
+        id: userId,
+      },
+      data: payload,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isDelete: true,
+        role: true,
+        status: true,
+        updatedAt: true,
+      },
+    });
+    await tx.userProfile.update({
+      where: {
+        email: userInfo.email,
+      },
+      data: {
+        status: payload?.status,
+      },
+    });
+    return userInfo;
   });
 
   return result;
@@ -174,7 +176,7 @@ const getSingleUserDB = async (paramsId: string) => {
 };
 export const userService = {
   getAllUsersDB,
-  // adminUpdateUserDB,
+  adminUpdateUserDB,
   findMyProfileDB,
   updateMyProfileDB,
   getSingleUserDB,
