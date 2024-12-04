@@ -287,6 +287,7 @@ const findAllSubCategoryDB = async (
   const result = await prisma.subCategory.findMany({
     where: whereConditions as any,
     include: {
+      category: true,
       admin: {
         select: {
           id: true,
