@@ -343,6 +343,12 @@ const existFindAllCategoryDB = async () => {
   return result;
 };
 const singleCategoryBaseFindAllSubCategoryDB = async (categoryId: string) => {
+  await prisma.category.findUniqueOrThrow({
+    where: {
+      id: categoryId,
+      isDelete: false,
+    },
+  });
   const result = await prisma.subCategory.findMany({
     where: {
       isDelete: false,
