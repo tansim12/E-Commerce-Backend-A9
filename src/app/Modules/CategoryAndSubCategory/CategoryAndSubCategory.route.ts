@@ -45,7 +45,12 @@ router.get(
 );
 router.get(
   "/category/admin/allCategory",
-  authMiddleWare(UserRole.admin,UserRole.vendor),
+  authMiddleWare(UserRole.admin, UserRole.vendor),
   categoryAndSubCategoryController.existFindAllCategory
+);
+router.get(
+  "/category/categoryBaseSubCategory/:categoryId",
+  authMiddleWare(UserRole.admin, UserRole.vendor),
+  categoryAndSubCategoryController.singleCategoryBaseFindAllSubCategory
 );
 export const categoryAndSubCategoryRouter = router;

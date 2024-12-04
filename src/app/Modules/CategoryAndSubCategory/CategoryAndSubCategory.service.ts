@@ -342,6 +342,24 @@ const existFindAllCategoryDB = async () => {
   });
   return result;
 };
+const singleCategoryBaseFindAllSubCategoryDB = async (categoryId: string) => {
+  const result = await prisma.subCategory.findMany({
+    where: {
+      isDelete: false,
+      category: {
+        id: categoryId,
+      },
+    },
+    select: {
+      id: true,
+      categoryName: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return result;
+};
 
 export const categoryAndSubCategoryService = {
   createCategoryDB,
@@ -351,4 +369,5 @@ export const categoryAndSubCategoryService = {
   findAllCategoryDB,
   findAllSubCategoryDB,
   existFindAllCategoryDB,
+  singleCategoryBaseFindAllSubCategoryDB,
 };

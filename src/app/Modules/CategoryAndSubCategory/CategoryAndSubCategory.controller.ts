@@ -115,6 +115,27 @@ const existFindAllCategory: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const singleCategoryBaseFindAllSubCategory: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const result =
+      await categoryAndSubCategoryService.singleCategoryBaseFindAllSubCategoryDB(
+        req?.params?.categoryId
+      );
+    res.send(
+      successResponse(
+        result,
+        StatusCodes.OK,
+        "Category base find all sub category just name and id send"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 export const categoryAndSubCategoryController = {
   createCategory,
   createSubCategory,
@@ -123,4 +144,5 @@ export const categoryAndSubCategoryController = {
   findAllCategory,
   findAllSubCategory,
   existFindAllCategory,
+  singleCategoryBaseFindAllSubCategory,
 };
