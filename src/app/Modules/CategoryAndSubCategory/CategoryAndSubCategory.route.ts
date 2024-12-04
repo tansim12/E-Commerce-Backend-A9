@@ -33,4 +33,14 @@ router.put(
   authMiddleWare(UserRole.admin),
   categoryAndSubCategoryController.updateSubCategory
 );
+router.get(
+  "/category",
+  authMiddleWare(UserRole.admin),
+  categoryAndSubCategoryController.findAllCategory
+);
+router.get(
+  "/sub-category",
+  authMiddleWare(UserRole.admin),
+  categoryAndSubCategoryController.findAllSubCategory
+);
 export const categoryAndSubCategoryRouter = router;

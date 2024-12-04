@@ -2,6 +2,8 @@ import { RequestHandler } from "express";
 import { categoryAndSubCategoryService } from "./CategoryAndSubCategory.service";
 import { successResponse } from "../../Re-useable/successResponse";
 import { StatusCodes } from "http-status-codes";
+import pick from "../../shared/pick";
+import { categoryFilterAbleFields } from "./CategoryAndSubCategory.const";
 
 const createCategory: RequestHandler = async (req, res, next) => {
   try {
@@ -72,9 +74,38 @@ const updateSubCategory: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+const findAllCategory: RequestHandler = async (req, res, next) => {
+  try {
+    const filters = pick(req.query, categoryFilterAbleFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await categoryAndSubCategoryService.findAllCategoryDB(
+      filters,
+      options
+    );
+    res.send(successResponse(result, StatusCodes.OK, "All Category"));
+  } catch (error) {
+    next(error);
+  }
+};
+const findAllSubCategory: RequestHandler = async (req, res, next) => {
+  try {
+    const filters = pick(req.query, categoryFilterAbleFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await categoryAndSubCategoryService.findAllSubCategoryDB(
+      filters,
+      options
+    );
+    res.send(successResponse(result, StatusCodes.OK, "All Sub Category"));
+  } catch (error) {
+    next(error);
+  }
+};
 export const categoryAndSubCategoryController = {
   createCategory,
   createSubCategory,
   updateCategory,
   updateSubCategory,
+  findAllCategory,
+  findAllSubCategory,
 };
