@@ -101,6 +101,20 @@ const findAllSubCategory: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const adminFindAllCategory: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await categoryAndSubCategoryService.adminFindAllCategoryDB();
+    res.send(
+      successResponse(
+        result,
+        StatusCodes.OK,
+        "All Category just name and id send"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 export const categoryAndSubCategoryController = {
   createCategory,
   createSubCategory,
@@ -108,4 +122,5 @@ export const categoryAndSubCategoryController = {
   updateSubCategory,
   findAllCategory,
   findAllSubCategory,
+  adminFindAllCategory,
 };

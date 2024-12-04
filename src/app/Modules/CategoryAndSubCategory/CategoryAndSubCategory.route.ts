@@ -43,4 +43,9 @@ router.get(
   authMiddleWare(UserRole.admin),
   categoryAndSubCategoryController.findAllSubCategory
 );
+router.get(
+  "/category/admin/allCategory",
+  authMiddleWare(UserRole.admin),
+  categoryAndSubCategoryController.adminFindAllCategory
+);
 export const categoryAndSubCategoryRouter = router;
