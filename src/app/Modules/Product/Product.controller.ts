@@ -15,7 +15,20 @@ const createProduct: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const updateProduct: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await productService.updateProductDB(
+      req?.user,
+      req?.params?.productId,
+      req?.body
+    );
+    res.send(successResponse(result, StatusCodes.OK, "Product updated"));
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const productController = {
   createProduct,
+  updateProduct,
 };

@@ -13,5 +13,11 @@ router.post(
   authMiddleWare(UserRole.vendor),
   productController.createProduct
 );
+router.put(
+  "/:productId",
+  validationMiddleWare(productSchema.updateProductValidationSchema),
+  authMiddleWare(UserRole.vendor, UserRole.admin),
+  productController.updateProduct
+);
 
 export const productRoutes = router;
