@@ -110,7 +110,7 @@ model Category {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   subCategory  SubCategory[]
-  product      Product?
+  product      Product[]
 
   @@map("categories")
 }
@@ -125,7 +125,7 @@ model SubCategory {
   isDelete     Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  product      Product?
+  product      Product[]
 
   @@map("subCategories")
 }
@@ -141,6 +141,9 @@ model Product {
   promo         String?
   isActivePromo Boolean @default(false)
   isFlashSaleOffer Boolean @default(false)
+  flashSaleDiscount Int?  @default(0)
+  flashSaleStartDate DateTime? 
+  flashSaleEndDate DateTime? 
   shopId        String
   shop          Shop    @relation(fields: [shopId], references: [id])
   description   String
@@ -148,11 +151,11 @@ model Product {
   averageRating Int     @default(0)
 
   images        String[]
-  categoryId    String      @unique
+  categoryId    String      
   category      Category    @relation(fields: [categoryId], references: [id])
-  subCategoryId String      @unique
-  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
-  isDelete      Boolean
+  subCategoryId String?      
+  subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
+  isDelete      Boolean     @default(false)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
