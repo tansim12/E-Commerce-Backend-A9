@@ -217,6 +217,36 @@ const vendorFindHisShopDB = async (tokenUser: any) => {
   return result;
 };
 
+const updateShopInfoDB = async (
+  tokenUser: any,
+  shopId: string,
+  payload: any
+) => {
+  const isVendor = await prisma.user.findUnique({
+    where: {
+      id: tokenUser.id,
+      role:UserRole.vendor
+    },
+  });
+  
+  if (isVendor) {
+    await prisma.shop.findUniqueOrThrow({
+      where: {
+        id:shopId,
+        vendorId: isVendor?.id,
+      },
+    });
+  }
+  const { vendorId, id, ...newPayload } = payload;
+  const result = await prisma.shop.update({
+    where: {
+      id: shopId,
+    },
+    data: newPayload,
+  });
+  return result;
+};
+
 export const shopService = {
   crateShopDB,
   findAllShopPublicDB,
@@ -224,4 +254,5 @@ export const shopService = {
   shopFollowingDB,
   shopReviewDB,
   vendorFindHisShopDB,
+  updateShopInfoDB,
 };

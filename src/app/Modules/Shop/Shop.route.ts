@@ -9,9 +9,18 @@ const router = express.Router();
 
 router.post(
   "/",
+  validationMiddleWare(shopFollowSchema.shopCreateSchema),
   authMiddleWare(UserRole.admin, UserRole.vendor),
   shopController.createShop
 );
+
+router.put(
+  "/:shopId",
+  validationMiddleWare(shopFollowSchema.shopUpdateSchema),
+  authMiddleWare(UserRole.admin, UserRole.vendor),
+  shopController.updateShopInfo
+);
+
 router.get("/", shopController.findAllShopPublic);
 router.get("/:shopId", shopController.findSingleShopPublic);
 router.post(
@@ -26,7 +35,6 @@ router.put(
   authMiddleWare(UserRole.admin, UserRole.user, UserRole.vendor),
   shopController.shopReview
 );
-
 
 router.get(
   "/vendor/vendor-my-shop",

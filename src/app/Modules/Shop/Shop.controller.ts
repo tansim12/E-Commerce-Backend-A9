@@ -74,6 +74,18 @@ const vendorFindHisShop: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const updateShopInfo: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await shopService.updateShopInfoDB(
+      req?.user,
+      req?.params?.shopId,
+      req?.body
+    );
+    res.send(successResponse(result, StatusCodes.OK, "Shop info update"));
+  } catch (error) {
+    next(error);
+  }
+};
 export const shopController = {
   createShop,
   findAllShopPublic,
@@ -81,4 +93,5 @@ export const shopController = {
   shopFollowing,
   shopReview,
   vendorFindHisShop,
+  updateShopInfo,
 };
