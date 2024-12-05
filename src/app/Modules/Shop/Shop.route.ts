@@ -27,4 +27,11 @@ router.put(
   shopController.shopReview
 );
 
+
+router.get(
+  "/vendor/vendor-my-shop",
+  authMiddleWare(UserRole.admin, UserRole.vendor),
+  shopController.vendorFindHisShop
+);
+
 export const shopRouter = router;

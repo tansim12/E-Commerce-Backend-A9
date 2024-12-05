@@ -60,12 +60,16 @@ const shopReview: RequestHandler = async (req, res, next) => {
   try {
     const result = await shopService.shopReviewDB(req?.user, req?.body);
     res.send(
-      successResponse(
-        result,
-        StatusCodes.OK,
-        "Shop review successfully done"
-      )
+      successResponse(result, StatusCodes.OK, "Shop review successfully done")
     );
+  } catch (error) {
+    next(error);
+  }
+};
+const vendorFindHisShop: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await shopService.vendorFindHisShopDB(req?.user);
+    res.send(successResponse(result, StatusCodes.OK, "Vendor Find his shop"));
   } catch (error) {
     next(error);
   }
@@ -76,4 +80,5 @@ export const shopController = {
   findSingleShopPublic,
   shopFollowing,
   shopReview,
+  vendorFindHisShop,
 };

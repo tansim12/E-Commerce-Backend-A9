@@ -5,8 +5,6 @@ import { paginationHelper } from "../../helper/paginationHelper";
 import { shopSearchAbleFields } from "./Shop.const";
 
 const crateShopDB = async (tokenUser: any, payload: any) => {
-  console.log(tokenUser);
-
   await prisma.user.findUniqueOrThrow({
     where: {
       id: tokenUser.id,
@@ -34,10 +32,7 @@ const crateShopDB = async (tokenUser: any, payload: any) => {
   });
 
   const result = await prisma.shop.create({
-    data: {
-      vendorId: payload?.vendorId,
-      name: payload.name,
-    },
+    data: payload,
   });
   return result;
 };
@@ -131,6 +126,7 @@ const findAllShopPublicDB = async (
   };
 };
 
+// following and review section
 const shopFollowingDB = async (tokenUser: any, payload: any) => {
   const userInfo = await prisma.user.findUniqueOrThrow({
     where: {
@@ -180,7 +176,6 @@ const shopReviewDB = async (tokenUser: any, payload: any) => {
     },
   });
 
-
   if (payload?.isDelete === false) {
     const result = await prisma.shopReview.upsert({
       where: {
@@ -213,10 +208,20 @@ const shopReviewDB = async (tokenUser: any, payload: any) => {
   }
 };
 
+const vendorFindHisShopDB = async (tokenUser: any) => {
+  const result = await prisma.shop.findUnique({
+    where: {
+      vendorId: tokenUser?.id,
+    },
+  });
+  return result;
+};
+
 export const shopService = {
   crateShopDB,
   findAllShopPublicDB,
   findSingleShopPublicDB,
   shopFollowingDB,
   shopReviewDB,
+  vendorFindHisShopDB,
 };
