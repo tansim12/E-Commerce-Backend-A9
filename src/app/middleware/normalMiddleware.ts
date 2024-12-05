@@ -9,7 +9,7 @@ const normalMiddleware = (app: Application) => {
       origin: [
         "http://localhost:3000",
         "http://localhost:3001",
-        "https://e-commerce-a9.vercel.app",
+        "https://e-commerce-next-a9.vercel.app",
       ],
       credentials: true,
     })
