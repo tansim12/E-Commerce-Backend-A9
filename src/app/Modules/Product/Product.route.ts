@@ -35,5 +35,9 @@ router.get(
   "/public/top-sale-products",
   productController.publicTopSaleProduct
 );
+router.get(
+  "/public/single-product/:productId",
+  productController.publicSingleProduct
+);
 
 export const productRoutes = router;

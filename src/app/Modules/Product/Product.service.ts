@@ -339,10 +339,58 @@ const publicTopSaleProductDB = async (
   };
 };
 
+const publicSingleProductDb = async (productId: string) => {
+  const result = await prisma.product.findUniqueOrThrow({
+    where: {
+      id: productId,
+      isDelete: false,
+    },
+    include: {
+      category: {
+        select: {
+          categoryName: true,
+          id: true,
+        },
+      },
+      subCategory: {
+        select: {
+          categoryName: true,
+          id: true,
+        },
+      },
+    },
+  });
+
+  const relatedProduct = await prisma.product.findMany({
+    where: {
+      OR: [
+        {
+          categoryId: result.categoryId,
+        },
+        {
+          subCategoryId: result.subCategoryId,
+        },
+      ],
+      NOT:{
+        id:result.id
+      }
+    },
+    take: 5,
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
+  return {
+    result,
+    relatedProduct,
+  };
+};
+
 export const productService = {
   createProductDB,
   updateProductDB,
   findVendorShopAllProductsDB,
   adminFindAllProductsDB,
   publicTopSaleProductDB,
+  publicSingleProductDb,
 };

@@ -71,6 +71,16 @@ const publicTopSaleProduct: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const publicSingleProduct: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await productService.publicSingleProductDb(
+      req?.params?.productId
+    );
+    res.send(successResponse(result, StatusCodes.OK, "Single Product Find "));
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const productController = {
   createProduct,
@@ -78,4 +88,5 @@ export const productController = {
   findVendorShopAllProducts,
   adminFindAllProducts,
   publicTopSaleProduct,
+  publicSingleProduct,
 };
