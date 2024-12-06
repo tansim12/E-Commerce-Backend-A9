@@ -3,5 +3,6 @@ export const shopSearchAbleFields: string[] = [
   "address",
   "description",
   "name",
+  "vendorId",
 ];
 export const shopFilterAbleFields: string[] = ["shopType", "searchTerm"];

@@ -86,6 +86,17 @@ const updateShopInfo: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+const adminFindAllShop: RequestHandler = async (req, res, next) => {
+  try {
+    const filters = pick(req.query, shopFilterAbleFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await shopService.adminFindAllShopDB(filters, options);
+    res.send(successResponse(result, StatusCodes.OK, "Find all Shop"));
+  } catch (error) {
+    next(error);
+  }
+};
 export const shopController = {
   createShop,
   findAllShopPublic,
@@ -94,4 +105,5 @@ export const shopController = {
   shopReview,
   vendorFindHisShop,
   updateShopInfo,
+  adminFindAllShop,
 };

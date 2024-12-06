@@ -41,5 +41,10 @@ router.get(
   authMiddleWare(UserRole.admin, UserRole.vendor),
   shopController.vendorFindHisShop
 );
+router.get(
+  "/admin/find-all-shops",
+  authMiddleWare(UserRole.admin),
+  shopController.adminFindAllShop
+);
 
 export const shopRouter = router;

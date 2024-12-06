@@ -225,14 +225,14 @@ const updateShopInfoDB = async (
   const isVendor = await prisma.user.findUnique({
     where: {
       id: tokenUser.id,
-      role:UserRole.vendor
+      role: UserRole.vendor,
     },
   });
-  
+
   if (isVendor) {
     await prisma.shop.findUniqueOrThrow({
       where: {
-        id:shopId,
+        id: shopId,
         vendorId: isVendor?.id,
       },
     });
@@ -247,6 +247,68 @@ const updateShopInfoDB = async (
   return result;
 };
 
+// public all shop get
+const adminFindAllShopDB = async (
+  queryObj: any,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = queryObj;
+  const andCondition = [];
+  if (queryObj.searchTerm) {
+    andCondition.push({
+      OR: shopSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: queryObj.searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    andCondition.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: filterData[key as never],
+        },
+      })),
+    });
+  }
+
+  const whereConditions: Prisma.UserWhereInput = { AND: andCondition };
+
+  const result = await prisma.shop.findMany({
+    where: {
+      ...(whereConditions as any),
+    },
+
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
+  });
+
+  const total = await prisma.shop.count({
+    where: whereConditions as any,
+  });
+  const meta = {
+    page,
+    limit,
+    total,
+  };
+  return {
+    meta,
+    result,
+  };
+};
+
 export const shopService = {
   crateShopDB,
   findAllShopPublicDB,
@@ -255,4 +317,5 @@ export const shopService = {
   shopReviewDB,
   vendorFindHisShopDB,
   updateShopInfoDB,
+  adminFindAllShopDB,
 };
