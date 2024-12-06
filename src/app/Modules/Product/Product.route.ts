@@ -24,5 +24,10 @@ router.get(
   authMiddleWare(UserRole.vendor),
   productController.findVendorShopAllProducts
 );
+router.get(
+  "/admin/all-products",
+  authMiddleWare(UserRole.admin),
+  productController.adminFindAllProducts
+);
 
 export const productRoutes = router;

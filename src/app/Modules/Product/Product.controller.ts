@@ -40,7 +40,20 @@ const findVendorShopAllProducts: RequestHandler = async (req, res, next) => {
       filters,
       options
     );
-    res.send(successResponse(result, StatusCodes.OK, "find all user"));
+    res.send(successResponse(result, StatusCodes.OK, "find all product"));
+  } catch (error) {
+    next(error);
+  }
+};
+const adminFindAllProducts: RequestHandler = async (req, res, next) => {
+  try {
+    const filters = pick(req.query, shopFilterAbleFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await productService.adminFindAllProductsDB(
+      filters,
+      options
+    );
+    res.send(successResponse(result, StatusCodes.OK, "find Products"));
   } catch (error) {
     next(error);
   }
@@ -50,4 +63,5 @@ export const productController = {
   createProduct,
   updateProduct,
   findVendorShopAllProducts,
+  adminFindAllProducts,
 };
