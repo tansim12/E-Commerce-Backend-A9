@@ -58,10 +58,24 @@ const adminFindAllProducts: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const publicTopSaleProduct: RequestHandler = async (req, res, next) => {
+  try {
+    const filters = pick(req.query, shopFilterAbleFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await productService.publicTopSaleProductDB(
+      filters,
+      options
+    );
+    res.send(successResponse(result, StatusCodes.OK, "find top sale Products"));
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const productController = {
   createProduct,
   updateProduct,
   findVendorShopAllProducts,
   adminFindAllProducts,
+  publicTopSaleProduct,
 };

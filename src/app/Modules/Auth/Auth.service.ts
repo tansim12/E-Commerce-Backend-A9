@@ -177,6 +177,7 @@ const forgotPasswordDB = async (payload: { email: string }) => {
 
   const resetPassLink =
     config.reset_pass_link + `?userId=${userData.id}&token=${resetPassToken}`;
+    // `${process.env.FRONTEND_URL}/forget-password?id=${user.id}&token=${resetToken} `
 
   await emailSender(
     userData.email,

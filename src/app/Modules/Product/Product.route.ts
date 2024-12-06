@@ -30,4 +30,10 @@ router.get(
   productController.adminFindAllProducts
 );
 
+// public 
+router.get(
+  "/public/top-sale-products",
+  productController.publicTopSaleProduct
+);
+
 export const productRoutes = router;

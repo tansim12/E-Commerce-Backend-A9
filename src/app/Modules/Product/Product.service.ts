@@ -42,7 +42,7 @@ const updateProductDB = async (
       status: UserStatus.active,
     },
   });
-  
+
   if (IsVendor?.role === UserRole.vendor) {
     await prisma.product.findUniqueOrThrow({
       where: {
@@ -73,8 +73,6 @@ const findVendorShopAllProductsDB = async (
 
   const andCondition = [];
   if (queryObj.searchTerm) {
-    console.log(searchTerm);
-
     andCondition.push({
       OR: shopAllProductsSearchAbleFields?.map((field) => ({
         [field]: {
@@ -259,10 +257,90 @@ const adminFindAllProductsDB = async (
     result,
   };
 };
+const publicTopSaleProductDB = async (
+  queryObj: any,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = queryObj;
+
+  const andCondition = [];
+  if (queryObj.searchTerm) {
+    andCondition.push({
+      OR: shopAllProductsSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: queryObj.searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+  if (Object.keys(filterData).length > 0) {
+    andCondition.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: filterData[key as never],
+        },
+      })),
+    });
+  }
+
+  const whereConditions: Prisma.UserWhereInput = { AND: andCondition as any };
+
+  const result = await prisma.product.findMany({
+    where: {
+      ...(whereConditions as any),
+      isDelete: false,
+    },
+    include: {
+      category: {
+        select: {
+          categoryName: true,
+          id: true,
+        },
+      },
+      subCategory: {
+        select: {
+          categoryName: true,
+          id: true,
+        },
+      },
+      shop: {
+        select: {
+          name: true,
+          id: true,
+          logo: true,
+        },
+      },
+    },
+    skip,
+    take: limit,
+    orderBy: {
+      totalBuy: "desc",
+    },
+  });
+
+  const total = await prisma.product.count({
+    where: {
+      ...(whereConditions as any),
+      isDelete: false,
+    },
+  });
+  const meta = {
+    page,
+    limit,
+    total,
+  };
+  return {
+    meta,
+    result,
+  };
+};
 
 export const productService = {
   createProductDB,
   updateProductDB,
   findVendorShopAllProductsDB,
   adminFindAllProductsDB,
+  publicTopSaleProductDB,
 };
