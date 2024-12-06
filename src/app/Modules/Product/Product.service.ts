@@ -1,4 +1,4 @@
-import { Prisma, UserStatus } from "@prisma/client";
+import { Prisma, UserRole, UserStatus } from "@prisma/client";
 import prisma from "../../shared/prisma";
 import { IPaginationOptions } from "../../interface/pagination";
 import { paginationHelper } from "../../helper/paginationHelper";
@@ -42,7 +42,8 @@ const updateProductDB = async (
       status: UserStatus.active,
     },
   });
-  if (IsVendor) {
+  
+  if (IsVendor?.role === UserRole.vendor) {
     await prisma.product.findUniqueOrThrow({
       where: {
         id: productId,
