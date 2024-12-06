@@ -291,6 +291,7 @@ const publicTopSaleProductDB = async (
     where: {
       ...(whereConditions as any),
       isDelete: false,
+      isAvailable: true,
     },
     include: {
       category: {
@@ -324,6 +325,7 @@ const publicTopSaleProductDB = async (
     where: {
       ...(whereConditions as any),
       isDelete: false,
+      isAvailable: true,
     },
   });
   const meta = {
