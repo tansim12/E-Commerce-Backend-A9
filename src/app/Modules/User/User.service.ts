@@ -75,8 +75,11 @@ const getAllUsersDB = async (queryObj: any, options: IPaginationOptions) => {
 };
 
 const adminUpdateUserDB = async (userId: string, payload: any) => {
-  if (payload?.email|| payload.password) {
-    throw new AppError(StatusCodes.NOT_ACCEPTABLE, "You Can't change email or password");
+  if (payload?.email || payload.password) {
+    throw new AppError(
+      StatusCodes.NOT_ACCEPTABLE,
+      "You Can't change email or password"
+    );
   }
   const result = await prisma.$transaction(async (tx) => {
     const userInfo = await tx.user.update({
@@ -117,6 +120,7 @@ const findMyProfileDB = async (tokenUser: any) => {
     },
     select: {
       id: true,
+      name: true,
       email: true,
       status: true,
       isDelete: true,
@@ -130,6 +134,7 @@ const findMyProfileDB = async (tokenUser: any) => {
   return user;
 };
 const updateMyProfileDB = async (tokenUser: any, body: any) => {
+  const { name, ...payload } = body;
   const user = await prisma.user.findUniqueOrThrow({
     where: {
       email: tokenUser.email,
@@ -145,9 +150,17 @@ const updateMyProfileDB = async (tokenUser: any, body: any) => {
     );
   }
 
-  let userProfile = await prisma.userProfile.update({
+  if (name) {
+    await prisma.user.update({
+      where: { email: user.email },
+      data: {
+        name,
+      },
+    });
+  }
+  const userProfile = await prisma.userProfile.update({
     where: { email: user.email },
-    data: body,
+    data: payload,
   });
 
   return userProfile;
