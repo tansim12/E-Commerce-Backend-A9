@@ -455,7 +455,7 @@ const publicFlashSaleProductDB = async (
     skip,
     take: limit,
     orderBy: {
-      totalBuy: "desc",
+      updatedAt: "desc",
     },
   });
 
