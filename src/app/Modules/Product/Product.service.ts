@@ -358,6 +358,14 @@ const publicSingleProductDb = async (productId: string) => {
           id: true,
         },
       },
+      shop: {
+        select: {
+          logo: true,
+          name: true,
+          _count: true,
+        },
+      },
+      
     },
   });
 
@@ -371,9 +379,9 @@ const publicSingleProductDb = async (productId: string) => {
           subCategoryId: result.subCategoryId,
         },
       ],
-      NOT:{
-        id:result.id
-      }
+      NOT: {
+        id: result.id,
+      },
     },
     take: 5,
     orderBy: {
