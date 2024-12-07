@@ -363,9 +363,9 @@ const publicSingleProductDb = async (productId: string) => {
           logo: true,
           name: true,
           _count: true,
+          shopType: true,
         },
       },
-      
     },
   });
 
