@@ -541,6 +541,7 @@ const publicPromoCheckDB = async (payload: any) => {
     status: 200,
     message: "Congratulations, you got a discount!",
     newUnitPrice: product?.price - (product?.flashSaleDiscount as number),
+    id: product?.id,
   };
 };
 
