@@ -367,6 +367,15 @@ const singleCategoryBaseFindAllSubCategoryDB = async (categoryId: string) => {
   return result;
 };
 
+const publicFindAllCategoryWithSubCategoryDB = async () => {
+  const result = await prisma.category.findMany({
+    include: {
+      subCategory: true,
+    },
+  });
+  return result;
+};
+
 export const categoryAndSubCategoryService = {
   createCategoryDB,
   createSubCategoryDB,
@@ -376,4 +385,5 @@ export const categoryAndSubCategoryService = {
   findAllSubCategoryDB,
   existFindAllCategoryDB,
   singleCategoryBaseFindAllSubCategoryDB,
+  publicFindAllCategoryWithSubCategoryDB,
 };

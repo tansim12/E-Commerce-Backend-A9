@@ -53,4 +53,9 @@ router.get(
   authMiddleWare(UserRole.admin, UserRole.vendor),
   categoryAndSubCategoryController.singleCategoryBaseFindAllSubCategory
 );
+
+router.get(
+  "/",
+  categoryAndSubCategoryController.publicFindAllCategoryWithSubCategory
+);
 export const categoryAndSubCategoryRouter = router;
