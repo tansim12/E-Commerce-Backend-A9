@@ -82,6 +82,20 @@ const publicSingleProduct: RequestHandler = async (req, res, next) => {
   }
 };
 
+const publicFlashSaleProduct: RequestHandler = async (req, res, next) => {
+  try {
+    const filters = pick(req.query, shopFilterAbleFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await productService.publicFlashSaleProductDB(
+      filters,
+      options
+    );
+    res.send(successResponse(result, StatusCodes.OK, "find flash sale Products"));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const productController = {
   createProduct,
   updateProduct,
@@ -89,4 +103,5 @@ export const productController = {
   adminFindAllProducts,
   publicTopSaleProduct,
   publicSingleProduct,
+  publicFlashSaleProduct,
 };

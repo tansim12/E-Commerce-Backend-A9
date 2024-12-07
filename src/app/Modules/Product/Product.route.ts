@@ -39,5 +39,9 @@ router.get(
   "/public/single-product/:productId",
   productController.publicSingleProduct
 );
+router.get(
+  "/public/flash-sale/products",
+  productController.publicFlashSaleProduct
+);
 
 export const productRoutes = router;

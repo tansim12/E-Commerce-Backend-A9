@@ -292,6 +292,9 @@ const publicTopSaleProductDB = async (
       ...(whereConditions as any),
       isDelete: false,
       isAvailable: true,
+      quantity: {
+        gt: 1,
+      },
     },
     include: {
       category: {
@@ -394,6 +397,104 @@ const publicSingleProductDb = async (productId: string) => {
   };
 };
 
+const publicFlashSaleProductDB = async (
+  queryObj: any,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = queryObj;
+
+  const andCondition = [];
+  if (queryObj.searchTerm) {
+    andCondition.push({
+      OR: shopAllProductsSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: queryObj.searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+  if (Object.keys(filterData).length > 0) {
+    andCondition.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: filterData[key as never],
+        },
+      })),
+    });
+  }
+
+  const whereConditions: Prisma.UserWhereInput = { AND: andCondition as any };
+
+  const result = await prisma.product.findMany({
+    where: {
+      ...(whereConditions as any),
+      isDelete: false,
+      isAvailable: true,
+      // flash sale হওয়ার condition
+      isActivePromo: true,
+      promo: {
+        not: null,
+      },
+      flashSaleDiscount: {
+        not: null,
+      },
+      flashSaleEndDate: {
+        not: null,
+      },
+      flashSaleStartDate: {
+        not: null,
+      },
+      isFlashSaleOffer: true,
+      quantity: {
+        gt: 1,
+      },
+    },
+
+    skip,
+    take: limit,
+    orderBy: {
+      totalBuy: "desc",
+    },
+  });
+
+  const total = await prisma.product.count({
+    where: {
+      ...(whereConditions as any),
+      isDelete: false,
+      isAvailable: true,
+      // flash sale হওয়ার condition
+      isActivePromo: true,
+      promo: {
+        not: null,
+      },
+      flashSaleDiscount: {
+        not: null,
+      },
+      flashSaleEndDate: {
+        not: null,
+      },
+      flashSaleStartDate: {
+        not: null,
+      },
+      isFlashSaleOffer: true,
+      quantity: {
+        gt: 1,
+      },
+    },
+  });
+  const meta = {
+    page,
+    limit,
+    total,
+  };
+  return {
+    meta,
+    result,
+  };
+};
+
 export const productService = {
   createProductDB,
   updateProductDB,
@@ -401,4 +502,5 @@ export const productService = {
   adminFindAllProductsDB,
   publicTopSaleProductDB,
   publicSingleProductDb,
+  publicFlashSaleProductDB,
 };
