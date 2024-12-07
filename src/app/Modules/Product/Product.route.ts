@@ -30,11 +30,8 @@ router.get(
   productController.adminFindAllProducts
 );
 
-// public 
-router.get(
-  "/public/top-sale-products",
-  productController.publicTopSaleProduct
-);
+// public
+router.get("/public/top-sale-products", productController.publicTopSaleProduct);
 router.get(
   "/public/single-product/:productId",
   productController.publicSingleProduct
@@ -43,5 +40,6 @@ router.get(
   "/public/flash-sale/products",
   productController.publicFlashSaleProduct
 );
+router.post("/promo/check", productController.publicPromoCheck);
 
 export const productRoutes = router;

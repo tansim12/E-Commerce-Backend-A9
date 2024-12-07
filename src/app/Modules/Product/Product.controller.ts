@@ -90,7 +90,17 @@ const publicFlashSaleProduct: RequestHandler = async (req, res, next) => {
       filters,
       options
     );
-    res.send(successResponse(result, StatusCodes.OK, "find flash sale Products"));
+    res.send(
+      successResponse(result, StatusCodes.OK, "find flash sale Products")
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+const publicPromoCheck: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await productService.publicPromoCheckDB(req?.body);
+    res.send(successResponse(result, StatusCodes.OK, "Promo Check "));
   } catch (error) {
     next(error);
   }
@@ -104,4 +114,5 @@ export const productController = {
   publicTopSaleProduct,
   publicSingleProduct,
   publicFlashSaleProduct,
+  publicPromoCheck,
 };

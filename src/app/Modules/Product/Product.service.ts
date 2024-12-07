@@ -495,6 +495,55 @@ const publicFlashSaleProductDB = async (
   };
 };
 
+const publicPromoCheckDB = async (payload: any) => {
+  const currentDate = new Date();
+
+  const product = await prisma.product.findFirst({
+    where: {
+      id: payload?.id,
+      isDelete: false,
+      shopId: payload?.shopId,
+      isAvailable: true,
+      // Flash Sale শর্ত
+      isActivePromo: true,
+      promo: {
+        contains: payload?.promo,
+      },
+      flashSaleDiscount: {
+        not: null,
+      },
+      AND: [
+        {
+          flashSaleStartDate: {
+            lte: currentDate, // শুরু হয়েছে বা আজ শুরু
+          },
+        },
+        {
+          flashSaleEndDate: {
+            gte: currentDate, // এখনো চলছে বা আজ শেষ
+          },
+        },
+      ],
+      isFlashSaleOffer: true,
+      quantity: {
+        gt: 1,
+      },
+    },
+  });
+
+  if (!product) {
+    return {
+      status: 400,
+      message: "This Promo Not Available",
+    };
+  }
+  return {
+    status: 200,
+    message: "Congratulations, you got a discount!",
+  };
+};
+
+
 export const productService = {
   createProductDB,
   updateProductDB,
@@ -503,4 +552,5 @@ export const productService = {
   publicTopSaleProductDB,
   publicSingleProductDb,
   publicFlashSaleProductDB,
+  publicPromoCheckDB,
 };
