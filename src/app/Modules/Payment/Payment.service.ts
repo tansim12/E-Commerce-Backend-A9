@@ -363,7 +363,7 @@ const callbackDB = async (body: any, query: any) => {
             },
           });
 
-          // update product quantity
+          // update product quantity and buyQuantity increment
 
           const productUpdatePromise = productsUpdateInfo?.map(
             async (item: any) => {
@@ -381,6 +381,7 @@ const callbackDB = async (body: any, query: any) => {
                   data: {
                     quantity: 0,
                     isAvailable: false,
+                    totalBuy: product?.totalBuy + item?.selectQuantity,
                   },
                 });
               }
@@ -393,6 +394,7 @@ const callbackDB = async (body: any, query: any) => {
                     quantity:
                       (product?.quantity as number) - item?.selectQuantity,
                     isAvailable: false,
+                    totalBuy: product?.totalBuy + item?.selectQuantity,
                   },
                 });
               } else {
@@ -403,6 +405,7 @@ const callbackDB = async (body: any, query: any) => {
                   data: {
                     quantity:
                       (product?.quantity as number) - item?.selectQuantity,
+                    totalBuy: product?.totalBuy + item?.selectQuantity,
                   },
                 });
               }
