@@ -30,6 +30,7 @@ model User {
   shopFollow         ShopFollow[]
   category           Category[]
   subCategory        SubCategory[]
+  payment            Payment[]
 
   @@map("users")
 }
@@ -68,6 +69,7 @@ model Shop {
   shopReview    ShopReview[]
   shopFollow    ShopFollow[]
   product       Product[]
+  payment       Payment[]
 
   @@map("shops")
 }
@@ -116,50 +118,83 @@ model Category {
 }
 
 model SubCategory {
-  id           String   @id @default(uuid())
-  categoryName String   @unique
+  id           String    @id @default(uuid())
+  categoryName String    @unique
   adminId      String
-  admin        User     @relation(fields: [adminId], references: [id])
+  admin        User      @relation(fields: [adminId], references: [id])
   categoryId   String
-  category     Category @relation(fields: [categoryId], references: [id])
-  isDelete     Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  category     Category  @relation(fields: [categoryId], references: [id])
+  isDelete     Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   product      Product[]
 
   @@map("subCategories")
 }
 
 model Product {
-  id            String  @id @default(uuid())
-  productName   String
-  quantity      Int     @default(1)
-  isAvailable   Boolean @default(true)
-  totalBuy      Int     @default(0)
-  price         Int
-  discount      Int?
-  promo         String?
-  isActivePromo Boolean @default(false)
-  isFlashSaleOffer Boolean @default(false)
-  flashSaleDiscount Int?  @default(0)
-  flashSaleStartDate DateTime? 
-  flashSaleEndDate DateTime? 
-  shopId        String
-  shop          Shop    @relation(fields: [shopId], references: [id])
-  description   String
-  totalSubmitRating Int @default(0)
-  averageRating Int     @default(0)
+  id                 String    @id @default(uuid())
+  productName        String
+  quantity           Int       @default(1)
+  isAvailable        Boolean   @default(true)
+  totalBuy           Int       @default(0)
+  price              Int
+  discount           Int?
+  promo              String?
+  isActivePromo      Boolean   @default(false)
+  isFlashSaleOffer   Boolean   @default(false)
+  flashSaleDiscount  Int?      @default(0)
+  flashSaleStartDate DateTime?
+  flashSaleEndDate   DateTime?
+  shopId             String
+  shop               Shop      @relation(fields: [shopId], references: [id])
+  description        String
+  totalSubmitRating  Int       @default(0)
+  averageRating      Int       @default(0)
 
-  images        String[]
-  categoryId    String      
-  category      Category    @relation(fields: [categoryId], references: [id])
-  subCategoryId String?      
-  subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
-  isDelete      Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  images            String[]
+  categoryId        String
+  category          Category            @relation(fields: [categoryId], references: [id])
+  subCategoryId     String?
+  subCategory       SubCategory?        @relation(fields: [subCategoryId], references: [id])
+  isDelete          Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  paymentAndProduct PaymentAndProduct[]
 
   @@map("products")
+}
+
+model PaymentAndProduct {
+  id          String   @id @default(uuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  paymentId   String
+  payment     Payment? @relation(fields: [paymentId], references: [id])
+  buyQuantity Int
+  isPromoUse  Boolean  @default(false)
+  paymentStatus PaymentStatus @default(pending)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([paymentId, productId]) // Ensures unique product-payment pairing
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  shopId        String
+  shop          Shop     @relation(fields: [shopId], references: [id])
+  amount        Int
+  method        String?
+  txId          String
+  payment_type  String?
+  approval_code String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  paymentAndProduct PaymentAndProduct[]
 }
 
 enum UserRole {
@@ -176,4 +211,10 @@ enum UserStatus {
 enum Gender {
   male
   female
+}
+
+enum PaymentStatus {
+  pending
+  cancel
+  confirm
 }
