@@ -187,7 +187,7 @@ model Payment {
   shopId        String
   shop          Shop     @relation(fields: [shopId], references: [id])
   amount        Int
-  method        String?
+  mer_txnid        String?
   txId          String
   paymentStatus PaymentStatus @default(pending)
   payment_type  String?

@@ -10,6 +10,7 @@ import prisma from "../../shared/prisma";
 import { verifyPayment } from "../../utils/verifyPayment";
 import AppError from "../../Error-Handler/AppError";
 import { StatusCodes } from "http-status-codes";
+import { PaymentStatus } from "@prisma/client";
 
 interface TUpdatePaymentPayload {
   isDecline?: boolean;
@@ -312,7 +313,6 @@ const callbackDB = async (body: any, query: any) => {
   });
 
   console.log(paymentInfo);
-  
 
   try {
     if (body && body?.status_code === "2") {
@@ -324,11 +324,44 @@ const callbackDB = async (body: any, query: any) => {
         // Prepare the payment data
 
         // Update user isVerified field
+        const result = await prisma.$transaction(async (tx) => {
+          const paymentAndProductIds = paymentInfo?.paymentAndProduct.map(
+            (item: any) => item?.id
+          );
+          const updatePayment = await tx.payment.update({
+            where: {
+              id: paymentInfo?.id,
+            },
+            data: {
+              amount: Number(amount),
+              approval_code: approval_code,
+              payment_type: payment_type,
+              paymentStatus: PaymentStatus.confirm,
+              mer_txnid: mer_txnid,
+            },
+          });
 
+          await tx.paymentAndProduct.updateMany({
+            where: {
+              id: {
+                in: paymentAndProductIds,
+              },
+            },
+            data: {
+              paymentStatus: PaymentStatus.confirm,
+            },
+          });
+          
+          return updatePayment;
+        });
         //! Save the payment info
 
         // Commit the transaction
-
+        if (!result) {
+          return {
+            success: false,
+          };
+        }
         return {
           success: true,
           txnId: query?.txnId,
