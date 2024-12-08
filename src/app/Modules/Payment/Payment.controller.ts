@@ -3,6 +3,9 @@ import { paymentService } from "./Payment.service";
 
 import dotenv from "dotenv";
 import { successResponse } from "../../Re-useable/successResponse";
+import { paymentInfoFilterAbleFields } from "./Payment.const";
+import pick from "../../shared/pick";
+import { StatusCodes } from "http-status-codes";
 dotenv.config();
 
 const payment: RequestHandler = async (req, res, next) => {
@@ -32,15 +35,14 @@ const callback: RequestHandler = async (req, res, next) => {
 };
 
 const myAllPaymentInfo: RequestHandler = async (req, res, next) => {
-  // try {
-  //   const result = await paymentService.myAllPaymentInfoDB(
-  //     req.user?.id,
-  //     req?.query
-  //   );
-  //   res.send(successResponse(result, 200, "My Payment Info find done"));
-  // } catch (error) {
-  //   next(error);
-  // }
+  try {
+    const filters = pick(req.query, paymentInfoFilterAbleFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await paymentService.myAllPaymentInfoDB(req?.user, filters, options);
+    res.send(successResponse(result, StatusCodes.OK, "find all user"));
+  } catch (error) {
+    next(error);
+  }
 };
 const allPaymentInfo: RequestHandler = async (req, res, next) => {
   // try {

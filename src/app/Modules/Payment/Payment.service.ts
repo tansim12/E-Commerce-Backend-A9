@@ -5,12 +5,17 @@ import dotenv from "dotenv";
 dotenv.config();
 import { TPaymentInfo } from "./payment.interface";
 
-import { paymentInfoSearchTerm } from "./Payment.const";
+import {
+  paymentInfoSearchAbleFields,
+  paymentInfoSearchTerm,
+} from "./Payment.const";
 import prisma from "../../shared/prisma";
 import { verifyPayment } from "../../utils/verifyPayment";
 import AppError from "../../Error-Handler/AppError";
 import { StatusCodes } from "http-status-codes";
-import { PaymentStatus } from "@prisma/client";
+import { PaymentStatus, Prisma } from "@prisma/client";
+import { paginationHelper } from "../../helper/paginationHelper";
+import { IPaginationOptions } from "../../interface/pagination";
 
 interface TUpdatePaymentPayload {
   isDecline?: boolean;
@@ -368,7 +373,6 @@ const callbackDB = async (body: any, query: any) => {
                 },
               });
 
-
               if ((product?.quantity as number) < item?.selectQuantity) {
                 await tx.product.update({
                   where: {
@@ -434,37 +438,82 @@ const callbackDB = async (body: any, query: any) => {
 };
 
 const myAllPaymentInfoDB = async (
-  userId: string,
-  queryObj: Partial<TPaymentInfo>
+  tokenUser: any,
+  queryObj: any,
+  options: IPaginationOptions
 ) => {
-  // const user = await UserModel.findById({ _id: userId }).select("+password");
-  // if (!user) {
-  //   throw new AppError(httpStatus.NOT_FOUND, "User Not found !");
-  // }
-  // if (user?.isDelete) {
-  //   throw new AppError(httpStatus.BAD_REQUEST, "User Already Delete !");
-  // }
-  // if (user?.status === USER_STATUS.block) {
-  //   throw new AppError(httpStatus.BAD_REQUEST, "User Already Blocked!");
-  // }
-  // const queryPaymentInfo = new QueryBuilder2(
-  //   PaymentInfoModel.find({ userId }).populate({
-  //     path: "userId",
-  //     select: "name _id email",
-  //   }),
-  //   queryObj
-  // )
-  //   .filter()
-  //   .fields()
-  //   .sort()
-  //   .paginate()
-  //   .search(paymentInfoSearchTerm);
-  // const result = await queryPaymentInfo.modelQuery;
-  // const meta = await queryPaymentInfo.countTotal();
-  // return {
-  //   result,
-  //   meta,
-  // };
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = queryObj;
+
+  const andCondition = [];
+  if (queryObj.searchTerm) {
+    andCondition.push({
+      OR: paymentInfoSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: queryObj.searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+  if (Object.keys(filterData).length > 0) {
+    andCondition.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: filterData[key as never],
+        },
+      })),
+    });
+  }
+
+  const whereConditions: Prisma.UserWhereInput = { AND: andCondition as any };
+
+  const result = await prisma.payment.findMany({
+    where: {
+      ...(whereConditions as any),
+      userId: tokenUser?.id,
+      paymentStatus: PaymentStatus.confirm,
+    },
+    include: {
+      paymentAndProduct: {
+        include: {
+          product: {
+            select: {
+              productName: true,
+              images: true,
+            },
+          },
+        },
+      },
+    },
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
+  });
+
+  const total = await prisma.payment.count({
+    where: {
+      ...(whereConditions as any),
+      userId: tokenUser?.id,
+      paymentStatus: PaymentStatus.confirm,
+    },
+  });
+  const meta = {
+    page,
+    limit,
+    total,
+  };
+  return {
+    meta,
+    result,
+  };
 };
 const allPaymentInfoDB = async (
   userId: string,
