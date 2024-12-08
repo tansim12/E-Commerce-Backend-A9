@@ -312,8 +312,6 @@ const callbackDB = async (body: any, query: any) => {
     },
   });
 
-  console.log(paymentInfo);
-
   try {
     if (body && body?.status_code === "2") {
       const verifyPaymentData = await verifyPayment(query?.txnId);
@@ -328,6 +326,13 @@ const callbackDB = async (body: any, query: any) => {
           const paymentAndProductIds = paymentInfo?.paymentAndProduct.map(
             (item: any) => item?.id
           );
+          const productsUpdateInfo = paymentInfo?.paymentAndProduct.map(
+            (item: any) => ({
+              productId: item?.productId,
+              selectQuantity: item?.selectQuantity,
+            })
+          );
+
           const updatePayment = await tx.payment.update({
             where: {
               id: paymentInfo?.id,
@@ -341,6 +346,7 @@ const callbackDB = async (body: any, query: any) => {
             },
           });
 
+          // update
           await tx.paymentAndProduct.updateMany({
             where: {
               id: {
@@ -351,7 +357,56 @@ const callbackDB = async (body: any, query: any) => {
               paymentStatus: PaymentStatus.confirm,
             },
           });
-          
+
+          // update product quantity
+
+          const productUpdatePromise = productsUpdateInfo?.map(
+            async (item: any) => {
+              const product = await prisma.product.findUnique({
+                where: {
+                  id: item?.productId,
+                },
+              });
+
+
+              if ((product?.quantity as number) < item?.selectQuantity) {
+                await tx.product.update({
+                  where: {
+                    id: item?.productId,
+                  },
+                  data: {
+                    quantity: 0,
+                    isAvailable: false,
+                  },
+                });
+              }
+              if ((product?.quantity as number) - item?.selectQuantity === 0) {
+                await tx.product.update({
+                  where: {
+                    id: item?.productId,
+                  },
+                  data: {
+                    quantity:
+                      (product?.quantity as number) - item?.selectQuantity,
+                    isAvailable: false,
+                  },
+                });
+              } else {
+                await tx.product.update({
+                  where: {
+                    id: item?.productId,
+                  },
+                  data: {
+                    quantity:
+                      (product?.quantity as number) - item?.selectQuantity,
+                  },
+                });
+              }
+            }
+          );
+          // Wait for all normal product inserts to complete
+          await Promise.all(productUpdatePromise);
+
           return updatePayment;
         });
         //! Save the payment info
