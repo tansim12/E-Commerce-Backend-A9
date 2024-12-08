@@ -178,7 +178,7 @@ model PaymentAndProduct {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@unique([paymentId, productId]) // Ensures unique product-payment pairing
+  // @@unique([paymentId, productId]) // Ensures unique product-payment pairing
 }
 
 model Payment {

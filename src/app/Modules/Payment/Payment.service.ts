@@ -161,24 +161,108 @@ const paymentDB = async (tokenUser: any, body: any) => {
     ) || 0;
   const mainTotalPrice = normalTotalPrice + promoTotalPrice;
 
-  // const initialDataCreate = await prisma.$transaction(async (tx) => {
-  //   const createPayment = await tx.payment.create({
-  //     data: {},
-  //   });
-  // });
-  return mainTotalPrice;
-  console.log({ mainTotalPrice });
+  // return mainTotalPrice;
+  // console.log({ mainTotalPrice });
 
   const transactionId = uuidv7(); // Generate a UUID
   const currentTime = new Date().toISOString(); // or use Date.now() for a timestamp in milliseconds
-
   // Concatenate UUID with current time
   const combinedTransactionId = `${transactionId}-${currentTime}`;
+  // db save
+
+  // const initialDataCreate = await prisma.$transaction(async (tx) => {
+  //   const createPayment = await tx.payment.create({
+  //     data: {
+  //       shopId: initialShopId,
+  //       amount: mainTotalPrice,
+  //       txId: combinedTransactionId,
+  //       userId: tokenUser?.id,
+  //     },
+  //   });
+  //   // normalProductCalculationResult
+  //   if (normalProductCalculationResult?.length) {
+  //     normalProductCalculationResult?.map(async (item: any) => {
+  //       await tx.paymentAndProduct.create({
+  //         data: {
+  //           productId: item?.id,
+  //           selectQuantity: item?.totalBuyQuantity,
+  //           payTotalAmount: item?.totalPrice,
+  //           paymentId: createPayment?.id,
+  //         },
+  //       });
+  //     });
+  //   }
+
+  //   // withPromoProductCalculationResult
+  //   if (withPromoProductCalculationResult?.length) {
+  //     withPromoProductCalculationResult?.map(async (item: any) => {
+  //       await tx.paymentAndProduct.create({
+  //         data: {
+  //           productId: item?.id,
+  //           selectQuantity: item?.totalBuyQuantity,
+  //           payTotalAmount: item?.totalPrice,
+  //           paymentId: createPayment?.id,
+  //         },
+  //       });
+  //     });
+  //   }
+
+  //   return createPayment;
+  // });
+  const initialDataCreate = await prisma.$transaction(async (tx) => {
+    const createPayment = await tx.payment.create({
+      data: {
+        shopId: initialShopId,
+        amount: mainTotalPrice,
+        txId: combinedTransactionId,
+        userId: tokenUser?.id,
+      },
+    });
+  
+    // Create entries in paymentAndProduct for normal products
+    if (normalProductCalculationResult?.length) {
+      const normalProductPromises = normalProductCalculationResult.map((item: any) => {
+        return tx.paymentAndProduct.create({
+          data: {
+            productId: item?.id,
+            selectQuantity: item?.totalBuyQuantity,
+            payTotalAmount: item?.totalPrice,
+            paymentId: createPayment?.id,
+          },
+        });
+      });
+      // Wait for all normal product inserts to complete
+      await Promise.all(normalProductPromises);
+    }
+  
+    // Create entries in paymentAndProduct for promo products
+    if (withPromoProductCalculationResult?.length) {
+      const promoProductPromises = withPromoProductCalculationResult.map((item: any) => {
+        return tx.paymentAndProduct.create({
+          data: {
+            productId: item?.id,
+            selectQuantity: item?.totalBuyQuantity,
+            payTotalAmount: item?.totalPrice,
+            paymentId: createPayment?.id,
+          },
+        });
+      });
+      // Wait for all promo product inserts to complete
+      await Promise.all(promoProductPromises);
+    }
+  
+    return createPayment;
+  });
+
+  if (!initialDataCreate) {
+    throw new AppError(StatusCodes.CONFLICT,"Initial Db insert failed")
+  }
+
   const formData = {
     cus_name: `${user?.name ? user?.name : "N/A"}`,
     cus_email: `${user?.email ? user?.email : "N/A"}`,
     cus_phone: `${"N/A"}`,
-    amount: body?.amount,
+    amount: initialDataCreate?.amount,
     tran_id: combinedTransactionId,
     signature_key: process.env.AAMAR_PAY_SIGNATURE_KEY,
     store_id: "aamarpaytest",
