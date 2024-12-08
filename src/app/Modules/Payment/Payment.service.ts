@@ -307,6 +307,11 @@ const paymentDB = async (tokenUser: any, body: any) => {
 };
 
 const callbackDB = async (body: any, query: any) => {
+  if (body && body?.status_code === "7") {
+    return {
+      success: false,
+    };
+  }
   const { paymentId, userId, txnId } = query;
   const paymentInfo = await prisma.payment.findUniqueOrThrow({
     where: {
@@ -430,11 +435,6 @@ const callbackDB = async (body: any, query: any) => {
         };
       }
     }
-    if (body && body?.status_code === "7") {
-      return {
-        success: false,
-      };
-    }
   } catch (error) {
     throw new AppError(StatusCodes.PRECONDITION_FAILED, "Payment Failed"); // Rethrow the error to handle it outside the function
   }
@@ -520,10 +520,7 @@ const myAllPaymentInfoDB = async (
 };
 
 // admin all payments
-const allPaymentInfoDB = async (
-  queryObj: any,
-  options: IPaginationOptions
-) => {
+const allPaymentInfoDB = async (queryObj: any, options: IPaginationOptions) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = queryObj;
 
