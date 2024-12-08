@@ -18,7 +18,7 @@ const payment: RequestHandler = async (req, res, next) => {
 };
 const callback: RequestHandler = async (req, res, next) => {
   try {
-    const result:any = await paymentService.callbackDB(req.body, req?.query);
+    const result: any = await paymentService.callbackDB(req.body, req?.query);
     if (result?.success) {
       res.redirect(
         // `${process.env.FRONTEND_URL}payment-success?bookingId=${result?.bookingId}`
@@ -38,22 +38,25 @@ const myAllPaymentInfo: RequestHandler = async (req, res, next) => {
   try {
     const filters = pick(req.query, paymentInfoFilterAbleFields);
     const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
-    const result = await paymentService.myAllPaymentInfoDB(req?.user, filters, options);
+    const result = await paymentService.myAllPaymentInfoDB(
+      req?.user,
+      filters,
+      options
+    );
     res.send(successResponse(result, StatusCodes.OK, "find all user"));
   } catch (error) {
     next(error);
   }
 };
 const allPaymentInfo: RequestHandler = async (req, res, next) => {
-  // try {
-  //   const result = await paymentService.allPaymentInfoDB(
-  //     req.user?.id,
-  //     req?.query
-  //   );
-  //   res.send(successResponse(result, 200, "My Payment Info find done"));
-  // } catch (error) {
-  //   next(error);
-  // }
+  try {
+    const filters = pick(req.query, paymentInfoFilterAbleFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await paymentService.allPaymentInfoDB(filters, options);
+    res.send(successResponse(result, StatusCodes.OK, "find all user"));
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const paymentController = {

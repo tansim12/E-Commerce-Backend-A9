@@ -518,41 +518,86 @@ const myAllPaymentInfoDB = async (
     result,
   };
 };
+
+// admin all payments
 const allPaymentInfoDB = async (
-  userId: string,
-  queryObj: Partial<TPaymentInfo>
+  queryObj: any,
+  options: IPaginationOptions
 ) => {
-  // const user = await UserModel.findById({ _id: userId }).select("+password");
-  // if (!user) {
-  //   throw new AppError(httpStatus.NOT_FOUND, "User Not found !");
-  // }
-  // if (user?.isDelete) {
-  //   throw new AppError(httpStatus.BAD_REQUEST, "User Already Delete !");
-  // }
-  // if (user?.status === USER_STATUS.block) {
-  //   throw new AppError(httpStatus.BAD_REQUEST, "User Already Blocked!");
-  // }
-  // if (user?.role !== USER_ROLE.admin) {
-  //   throw new AppError(httpStatus.BAD_REQUEST, "You are not admin !!");
-  // }
-  // const queryPaymentInfo = new QueryBuilder2(
-  //   PaymentInfoModel.find().populate({
-  //     path: "userId",
-  //     select: "name _id email profilePhoto",
-  //   }),
-  //   queryObj
-  // )
-  //   .filter()
-  //   .fields()
-  //   .sort()
-  //   .paginate()
-  //   .search(paymentInfoSearchTerm);
-  // const result = await queryPaymentInfo.modelQuery;
-  // const meta = await queryPaymentInfo.countTotal();
-  // return {
-  //   result,
-  //   meta,
-  // };
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = queryObj;
+
+  const andCondition = [];
+  if (queryObj.searchTerm) {
+    andCondition.push({
+      OR: paymentInfoSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: queryObj.searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+  if (Object.keys(filterData).length > 0) {
+    andCondition.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: filterData[key as never],
+        },
+      })),
+    });
+  }
+
+  const whereConditions: Prisma.UserWhereInput = { AND: andCondition as any };
+
+  const result = await prisma.payment.findMany({
+    where: {
+      ...(whereConditions as any),
+      NOT: {
+        paymentStatus: PaymentStatus.pending,
+      },
+    },
+    include: {
+      paymentAndProduct: {
+        include: {
+          product: {
+            select: {
+              productName: true,
+              images: true,
+            },
+          },
+        },
+      },
+    },
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
+  });
+
+  const total = await prisma.payment.count({
+    where: {
+      ...(whereConditions as any),
+      NOT: {
+        paymentStatus: PaymentStatus.pending,
+      },
+    },
+  });
+  const meta = {
+    page,
+    limit,
+    total,
+  };
+  return {
+    meta,
+    result,
+  };
 };
 
 export const paymentService = {

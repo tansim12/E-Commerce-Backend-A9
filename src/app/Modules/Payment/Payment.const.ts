@@ -6,6 +6,6 @@ export const paymentInfoSearchAbleFields: string[] = [
   "approval_code",
   "txId",
   "mer_txnid",
-  "payment_type"
+  "payment_type",
 ];
 export const paymentInfoFilterAbleFields: string[] = ["searchTerm"];
