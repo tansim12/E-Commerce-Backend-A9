@@ -173,7 +173,6 @@ model PaymentAndProduct {
   payment     Payment? @relation(fields: [paymentId], references: [id])
   selectQuantity Int
   payTotalAmount Int
-  isPromoUse  Boolean  @default(false)
   paymentStatus PaymentStatus @default(pending)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

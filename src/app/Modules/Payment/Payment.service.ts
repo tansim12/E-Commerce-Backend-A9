@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-
 import { v7 as uuidv7 } from "uuid";
-
+import dotenv from "dotenv";
+dotenv.config();
 import { TPaymentInfo } from "./payment.interface";
 
 import { paymentInfoSearchTerm } from "./Payment.const";
@@ -218,44 +218,48 @@ const paymentDB = async (tokenUser: any, body: any) => {
         userId: tokenUser?.id,
       },
     });
-  
+
     // Create entries in paymentAndProduct for normal products
     if (normalProductCalculationResult?.length) {
-      const normalProductPromises = normalProductCalculationResult.map((item: any) => {
-        return tx.paymentAndProduct.create({
-          data: {
-            productId: item?.id,
-            selectQuantity: item?.totalBuyQuantity,
-            payTotalAmount: item?.totalPrice,
-            paymentId: createPayment?.id,
-          },
-        });
-      });
+      const normalProductPromises = normalProductCalculationResult.map(
+        (item: any) => {
+          return tx.paymentAndProduct.create({
+            data: {
+              productId: item?.id,
+              selectQuantity: item?.totalBuyQuantity,
+              payTotalAmount: item?.totalPrice,
+              paymentId: createPayment?.id,
+            },
+          });
+        }
+      );
       // Wait for all normal product inserts to complete
       await Promise.all(normalProductPromises);
     }
-  
+
     // Create entries in paymentAndProduct for promo products
     if (withPromoProductCalculationResult?.length) {
-      const promoProductPromises = withPromoProductCalculationResult.map((item: any) => {
-        return tx.paymentAndProduct.create({
-          data: {
-            productId: item?.id,
-            selectQuantity: item?.totalBuyQuantity,
-            payTotalAmount: item?.totalPrice,
-            paymentId: createPayment?.id,
-          },
-        });
-      });
+      const promoProductPromises = withPromoProductCalculationResult.map(
+        (item: any) => {
+          return tx.paymentAndProduct.create({
+            data: {
+              productId: item?.id,
+              selectQuantity: item?.totalBuyQuantity,
+              payTotalAmount: item?.totalPrice,
+              paymentId: createPayment?.id,
+            },
+          });
+        }
+      );
       // Wait for all promo product inserts to complete
       await Promise.all(promoProductPromises);
     }
-  
+
     return createPayment;
   });
 
   if (!initialDataCreate) {
-    throw new AppError(StatusCodes.CONFLICT,"Initial Db insert failed")
+    throw new AppError(StatusCodes.CONFLICT, "Initial Db insert failed");
   }
 
   const formData = {
@@ -272,7 +276,7 @@ const paymentDB = async (tokenUser: any, body: any) => {
     cus_add2: "N/A",
     cus_city: "N/A",
     cus_country: "Bangladesh",
-    success_url: `${process.env.BASE_URL}/api/payment/callback?txnId=${combinedTransactionId}&userId=${user?.id}`,
+    success_url: `${process.env.BASE_URL}/api/payment/callback?txnId=${combinedTransactionId}&userId=${user?.id}&paymentId=${initialDataCreate?.id}`,
 
     fail_url: `${process.env.BASE_URL}/api/payment/callback`,
     cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`, // its redirect to frontend directly
@@ -297,66 +301,48 @@ const paymentDB = async (tokenUser: any, body: any) => {
 };
 
 const callbackDB = async (body: any, query: any) => {
-  // const session = await startSession();
-  // session.startTransaction();
-  // try {
-  //   if (body && body?.status_code === "2") {
-  //     const verifyPaymentData = await verifyPayment(query?.txnId);
-  //     if (verifyPaymentData && verifyPaymentData?.status_code === "2") {
-  //       // Destructuring the necessary data
-  //       const { approval_code, payment_type, amount, cus_phone, mer_txnid } =
-  //         verifyPaymentData;
-  //       // Prepare the payment data
-  //       const paymentData = {
-  //         userId: query?.userId,
-  //         mer_txnid,
-  //         cus_phone,
-  //         amount,
-  //         payment_type,
-  //         approval_code,
-  //       };
-  //       // Update user isVerified field
-  //       const result = await UserModel.findByIdAndUpdate(
-  //         { _id: query?.userId },
-  //         { isVerified: true },
-  //         { new: true, session } // Pass the session for transaction
-  //       ).select("_id");
-  //       if (!result?.id) {
-  //         throw new AppError(StatusCodes.PRECONDITION_FAILED, "Payment failed");
-  //       }
-  //       //! Save the payment info
-  //       const savePaymentInfo = await PaymentInfoModel.create([paymentData], {
-  //         session,
-  //       });
-  //       if (!savePaymentInfo) {
-  //         throw new AppError(
-  //           httpStatus.PRECONDITION_FAILED,
-  //           "Payment info create failed"
-  //         );
-  //       }
-  //       // Commit the transaction
-  //       await session.commitTransaction();
-  //       session.endSession();
-  //       return {
-  //         success: true,
-  //         txnId: query?.txnId,
-  //       };
-  //     }
-  //   }
-  //   if (body && body?.status_code === "7") {
-  //     return {
-  //       success: false,
-  //     };
-  //   }
-  //   // If something doesn't match, abort the transaction
-  //   await session.abortTransaction();
-  //   session.endSession();
-  // } catch (error) {
-  //   // Abort the transaction on any error
-  //   await session.abortTransaction();
-  //   session.endSession();
-  //   throw new AppError(StatusCodes.PRECONDITION_FAILED, "Payment Failed"); // Rethrow the error to handle it outside the function
-  // }
+  const { paymentId, userId, txnId } = query;
+  const paymentInfo = await prisma.payment.findUniqueOrThrow({
+    where: {
+      id: paymentId,
+    },
+    include: {
+      paymentAndProduct: true,
+    },
+  });
+
+  console.log(paymentInfo);
+  
+
+  try {
+    if (body && body?.status_code === "2") {
+      const verifyPaymentData = await verifyPayment(query?.txnId);
+      if (verifyPaymentData && verifyPaymentData?.status_code === "2") {
+        // Destructuring the necessary data
+        const { approval_code, payment_type, amount, cus_phone, mer_txnid } =
+          verifyPaymentData;
+        // Prepare the payment data
+
+        // Update user isVerified field
+
+        //! Save the payment info
+
+        // Commit the transaction
+
+        return {
+          success: true,
+          txnId: query?.txnId,
+        };
+      }
+    }
+    if (body && body?.status_code === "7") {
+      return {
+        success: false,
+      };
+    }
+  } catch (error) {
+    throw new AppError(StatusCodes.PRECONDITION_FAILED, "Payment Failed"); // Rethrow the error to handle it outside the function
+  }
 };
 
 const myAllPaymentInfoDB = async (
