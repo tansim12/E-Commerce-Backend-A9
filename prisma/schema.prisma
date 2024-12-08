@@ -171,7 +171,8 @@ model PaymentAndProduct {
   product     Product  @relation(fields: [productId], references: [id])
   paymentId   String
   payment     Payment? @relation(fields: [paymentId], references: [id])
-  buyQuantity Int
+  selectQuantity Int
+  payTotalAmount Int
   isPromoUse  Boolean  @default(false)
   paymentStatus PaymentStatus @default(pending)
   createdAt   DateTime @default(now())
@@ -189,6 +190,7 @@ model Payment {
   amount        Int
   method        String?
   txId          String
+  paymentStatus PaymentStatus @default(pending)
   payment_type  String?
   approval_code String?
   createdAt     DateTime @default(now())

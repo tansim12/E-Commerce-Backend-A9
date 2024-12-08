@@ -23,6 +23,152 @@ const paymentDB = async (tokenUser: any, body: any) => {
     },
   });
 
+  // console.log(body);
+  const initialShopId = body?.[0]?.shopId;
+  const shopId = body?.find((item: any) => {
+    if (initialShopId !== item?.shopId) {
+      throw new AppError(StatusCodes.ACCEPTED, "ShopId not match");
+    }
+  });
+
+  const usedPromoProductIds = body
+    ?.filter((item: any) => item?.isPromoUse === true) // Filter items where isPromoUse is true
+    ?.map((item: any) => item.id); // Map to extract the id of each filtered item
+
+  // db থেকে প্রোডাক্ট বের করছি
+  const findWithPromoProducts = await prisma.product.findMany({
+    where: {
+      isDelete: false,
+      isAvailable: true,
+
+      id: {
+        in: usedPromoProductIds,
+      },
+    },
+    select: {
+      id: true,
+      price: true,
+      flashSaleDiscount: true,
+      quantity: true,
+    },
+  });
+
+  // promo code use করা  গুলোর quantity আলাদা করছি
+  const usedPromoProductIdAndBuyQuantity = body
+    ?.filter((item: any) => item?.isPromoUse === true) // Filter items where isPromoUse is true
+    ?.map((item: any) => ({
+      id: item?.id,
+      buyQuantity: item?.buyQuantity,
+    })); // Map to extract the id of each filtered item
+  // console.log({ usedPromoProductIdAndBuyQuantity });
+
+  const withPromoProductCalculationResult = usedPromoProductIdAndBuyQuantity
+    .map((promoItem: any) => {
+      const product = findWithPromoProducts.find(
+        (item) => item.id === promoItem.id
+      );
+
+      if (product) {
+        const totalBuyQuantity = Math.min(
+          promoItem.buyQuantity,
+          product.quantity
+        ); // বড় হলে, স্টকের সীমায় রাখুন
+
+        const totalPrice =
+          totalBuyQuantity * (product.price - (product.flashSaleDiscount || 0)); // price + flashSaleDiscount
+
+        return {
+          id: promoItem.id,
+          totalBuyQuantity,
+          totalPrice,
+        };
+      }
+
+      return null; // যদি প্রোডাক্ট না মেলে
+    })
+    .filter(Boolean); // null বা undefined বাদ দিন
+
+  //!
+  const normalProductIds = body
+    ?.filter((item: any) => item?.isPromoUse !== true) // Filter items where isPromoUse is true
+    ?.map((item: any) => item.id); // Map to extract the id of each filtered item
+
+  const findWithOutPromoProducts = await prisma.product.findMany({
+    where: {
+      isDelete: false,
+      isAvailable: true,
+
+      id: {
+        in: normalProductIds,
+      },
+    },
+    select: {
+      id: true,
+      price: true,
+      discount: true,
+      quantity: true,
+    },
+  });
+
+  // promo code use করা  গুলোর quantity আলাদা করছি
+  const normalBuyQuantity = body
+    ?.filter((item: any) => item?.isPromoUse !== true) // Filter items where isPromoUse is true
+    ?.map((item: any) => ({
+      id: item?.id,
+      buyQuantity: item?.buyQuantity,
+    })); // Map to extract the id of each filtered item
+
+  const normalProductCalculationResult = normalBuyQuantity
+    .map((promoItem: any) => {
+      const product = findWithOutPromoProducts.find(
+        (item) => item.id === promoItem.id
+      );
+
+      if (product) {
+        const totalBuyQuantity = Math.min(
+          promoItem.buyQuantity,
+          product.quantity
+        ); // বড় হলে, স্টকের সীমায় রাখুন
+
+        const totalPrice =
+          totalBuyQuantity * (product.price - (product.discount || 0)); // price + flashSaleDiscount
+
+        return {
+          id: promoItem.id,
+          totalBuyQuantity,
+          totalPrice,
+        };
+      }
+
+      return null; // যদি প্রোডাক্ট না মেলে
+    })
+    .filter(Boolean); // null বা undefined বাদ দিন
+  //! this is important
+  // console.log({
+  //   normalProductCalculationResult,
+  //   withPromoProductCalculationResult,
+  // });
+
+  const normalTotalPrice =
+    normalProductCalculationResult?.reduce(
+      (acc: any, item: any) => acc + item?.totalPrice,
+      0
+    ) || 0;
+  const promoTotalPrice =
+    withPromoProductCalculationResult?.reduce(
+      (acc: any, item: any) => acc + item?.totalPrice,
+      0
+    ) || 0;
+  const mainTotalPrice = normalTotalPrice + promoTotalPrice;
+
+  // const initialDataCreate = await prisma.$transaction(async (tx) => {
+  //   const createPayment = await tx.payment.create({
+  //     data: {},
+  //   });
+  // });
+  return mainTotalPrice;
+  console.log({ mainTotalPrice });
+
   const transactionId = uuidv7(); // Generate a UUID
   const currentTime = new Date().toISOString(); // or use Date.now() for a timestamp in milliseconds
 
@@ -199,11 +345,9 @@ const allPaymentInfoDB = async (
   // };
 };
 
-
 export const paymentService = {
   paymentDB,
   callbackDB,
   myAllPaymentInfoDB,
   allPaymentInfoDB,
-
 };
