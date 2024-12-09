@@ -4,4 +4,9 @@ export const shopAllProductsSearchAbleFields: string[] = [
   "promo",
   "id",
 ];
-export const shopAllProductsFilterAbleFields: string[] = ["searchTerm"];
+export const shopAllProductsFilterAbleFields: string[] = [
+  "isAvailable",
+  "searchTerm",
+  "categoryId",
+  "subCategoryId",
+];

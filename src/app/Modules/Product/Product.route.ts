@@ -7,6 +7,7 @@ import { productSchema } from "./Product.zodValidation";
 
 const router = express.Router();
 
+router.get("/", productController.publicAllProducts);
 router.post(
   "/",
   validationMiddleWare(productSchema.createProductValidationSchema),

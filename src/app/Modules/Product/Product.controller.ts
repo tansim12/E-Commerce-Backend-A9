@@ -4,7 +4,7 @@ import { successResponse } from "../../Re-useable/successResponse";
 import { StatusCodes } from "http-status-codes";
 import pick from "../../shared/pick";
 import { shopFilterAbleFields } from "../Shop/Shop.const";
-import { shopService } from "../Shop/Shop.service";
+import { shopAllProductsFilterAbleFields } from "./Product.const";
 
 const createProduct: RequestHandler = async (req, res, next) => {
   try {
@@ -106,6 +106,17 @@ const publicPromoCheck: RequestHandler = async (req, res, next) => {
   }
 };
 
+const publicAllProducts: RequestHandler = async (req, res, next) => {
+  try {
+    const filters = pick(req.query, shopAllProductsFilterAbleFields);  
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await productService.publicAllProductsDB(filters, options);
+    res.send(successResponse(result, StatusCodes.OK, "find all product"));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const productController = {
   createProduct,
   updateProduct,
@@ -115,4 +126,5 @@ export const productController = {
   publicSingleProduct,
   publicFlashSaleProduct,
   publicPromoCheck,
+  publicAllProducts,
 };
