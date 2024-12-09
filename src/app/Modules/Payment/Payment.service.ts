@@ -601,9 +601,48 @@ const allPaymentInfoDB = async (queryObj: any, options: IPaginationOptions) => {
   };
 };
 
+const adminAndVendorUpdatePaymentDB = async (
+  paymentId: string,
+  payload: any
+) => {
+  const paymentInfo = await prisma.payment.findUniqueOrThrow({
+    where: {
+      id: paymentId,
+    },
+    include: {
+      paymentAndProduct: true,
+    },
+  });
+  const paymentAndProductIds = paymentInfo?.paymentAndProduct?.map(
+    (item: any) => item?.id
+  );
+  const result = await prisma.$transaction(async (tx) => {
+    const updatePaymentStatus = await tx.payment.update({
+      where: {
+        id: paymentId,
+      },
+      data: {
+        paymentStatus: payload?.paymentStatus as any,
+      },
+    });
+     await tx.paymentAndProduct.updateMany({
+      where: {
+        id: {
+          in: paymentAndProductIds,
+        },
+      },
+      data: {
+        paymentStatus: payload?.paymentStatus as any,
+      },
+    });
+    return updatePaymentStatus;
+  });
+  return result;
+};
 export const paymentService = {
   paymentDB,
   callbackDB,
   myAllPaymentInfoDB,
   allPaymentInfoDB,
+  adminAndVendorUpdatePaymentDB,
 };

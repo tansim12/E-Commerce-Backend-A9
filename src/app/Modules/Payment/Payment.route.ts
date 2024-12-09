@@ -2,7 +2,6 @@ import express from "express";
 
 import { paymentController } from "./Payment.controller";
 
-
 import { UserRole } from "@prisma/client";
 import { authMiddleWare } from "../../middleware/authMiddleware";
 const router = express.Router();
@@ -25,5 +24,10 @@ router.get(
 );
 
 router.post("/callback", paymentController.callback);
+router.put(
+  "/payment-update/:paymentId",
+  authMiddleWare(UserRole.admin, UserRole.vendor),
+  paymentController.adminAndVendorUpdatePayment
+);
 
 export const paymentRoutes = router;

@@ -58,10 +58,22 @@ const allPaymentInfo: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const adminAndVendorUpdatePayment: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await paymentService.adminAndVendorUpdatePaymentDB(
+      req?.params?.paymentId,
+      req?.body
+    );
+    res.send(successResponse(result, StatusCodes.OK, "update payment"));
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const paymentController = {
   payment,
   callback,
   myAllPaymentInfo,
   allPaymentInfo,
+  adminAndVendorUpdatePayment,
 };
