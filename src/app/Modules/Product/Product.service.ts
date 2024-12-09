@@ -564,6 +564,21 @@ const publicAllProductsDB = async (
     });
   }
   if (Object.keys(filterData).length > 0) {
+    if (filterData?.isAvailable) {
+      if (
+        typeof filterData?.isAvailable === "string" &&
+        filterData?.isAvailable === "false"
+      ) {
+        filterData.isAvailable = false;
+      }
+      if (
+        typeof filterData?.isAvailable === "string" &&
+        filterData?.isAvailable === "true"
+      ) {
+        filterData.isAvailable = true;
+      }
+    }
+
     andCondition.push({
       AND: Object.keys(filterData).map((key) => ({
         [key]: {
