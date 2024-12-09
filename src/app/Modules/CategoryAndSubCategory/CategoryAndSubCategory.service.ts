@@ -380,6 +380,9 @@ const publicFindAllCategoryWithSubCategoryDB = async () => {
       },
     },
     take: 10,
+    orderBy:{
+      categoryName:"asc"
+    }
   });
   return result;
 };

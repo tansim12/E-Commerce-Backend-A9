@@ -545,38 +545,143 @@ const publicPromoCheckDB = async (payload: any) => {
   };
 };
 
+// const publicAllProductsDB = async (
+//   queryObj: any,
+//   options: IPaginationOptions
+// ) => {
+//   const { page, limit, skip } = paginationHelper.calculatePagination(options);
+//   const { searchTerm, priceStart, priceEnd, ...filterData } = queryObj;
+//   console.log(typeof priceStart);
+
+//   const andCondition = [];
+//   if (queryObj.searchTerm) {
+//     andCondition.push({
+//       OR: shopAllProductsSearchAbleFields.map((field) => ({
+//         [field]: {
+//           contains: queryObj.searchTerm,
+//           mode: "insensitive",
+//         },
+//       })),
+//     });
+//   }
+//   if (Object.keys(filterData).length > 0) {
+//     if (filterData?.isAvailable) {
+//       if (
+//         typeof filterData?.isAvailable === "string" &&
+//         filterData?.isAvailable === "false"
+//       ) {
+//         filterData.isAvailable = false;
+//       }
+//       if (
+//         typeof filterData?.isAvailable === "string" &&
+//         filterData?.isAvailable === "true"
+//       ) {
+//         filterData.isAvailable = true;
+//       }
+//     }
+
+//     andCondition.push({
+//       AND: Object.keys(filterData).map((key) => ({
+//         [key]: {
+//           equals: filterData[key as never],
+//         },
+//       })),
+//     });
+//   }
+
+//   const whereConditions: Prisma.UserWhereInput = { AND: andCondition as any };
+
+//   const result = await prisma.product.findMany({
+//     where: {
+//       ...(whereConditions as any),
+//       isDelete: false,
+//       AND: [
+//         {
+//           price: {
+//             gte: Number(priceStart), // Price should be greater than or equal to priceStart
+//           },
+//         },
+//         {
+//           price: {
+//             lte: Number(priceEnd), // Price should be less than or equal to priceEnd
+//           },
+//         },
+//       ],
+//     },
+//     include: {
+//       category: true,
+//       subCategory: true,
+//     },
+//     skip,
+//     take: limit,
+//     orderBy:
+//       options.sortBy && options.sortOrder
+//         ? {
+//             [options.sortBy]: options.sortOrder,
+//           }
+//         : {
+//             createdAt: "desc",
+//           },
+//   });
+
+//   const total = await prisma.product.count({
+//     where: {
+//       ...(whereConditions as any),
+//       isDelete: false,
+//       AND: [
+//         {
+//           price: {
+//             gte: Number(priceStart), // Price should be greater than or equal to priceStart
+//           },
+//         },
+//         {
+//           price: {
+//             lte: Number(priceEnd), // Price should be less than or equal to priceEnd
+//           },
+//         },
+//       ],
+//     },
+//   });
+//   const meta = {
+//     page,
+//     limit,
+//     total,
+//   };
+//   return {
+//     meta,
+//     result,
+//   };
+// };
+
+
 const publicAllProductsDB = async (
   queryObj: any,
   options: IPaginationOptions
 ) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
-  const { searchTerm, ...filterData } = queryObj;
+  const { searchTerm, priceStart, priceEnd, ...filterData } = queryObj;
 
   const andCondition = [];
-  if (queryObj.searchTerm) {
+
+  // Search term condition
+  if (searchTerm) {
     andCondition.push({
       OR: shopAllProductsSearchAbleFields.map((field) => ({
         [field]: {
-          contains: queryObj.searchTerm,
+          contains: searchTerm,
           mode: "insensitive",
         },
       })),
     });
   }
+
+  // Filter conditions
   if (Object.keys(filterData).length > 0) {
     if (filterData?.isAvailable) {
-      if (
-        typeof filterData?.isAvailable === "string" &&
-        filterData?.isAvailable === "false"
-      ) {
-        filterData.isAvailable = false;
-      }
-      if (
-        typeof filterData?.isAvailable === "string" &&
-        filterData?.isAvailable === "true"
-      ) {
-        filterData.isAvailable = true;
-      }
+      filterData.isAvailable =
+        typeof filterData.isAvailable === "string"
+          ? filterData.isAvailable === "true"
+          : filterData.isAvailable;
     }
 
     andCondition.push({
@@ -588,13 +693,34 @@ const publicAllProductsDB = async (
     });
   }
 
-  const whereConditions: Prisma.UserWhereInput = { AND: andCondition as any };
+  // Price range filter (conditionally added)
+  if (priceStart !== undefined || priceEnd !== undefined) {
+    const priceConditions = [];
+    if (priceStart !== undefined) {
+      priceConditions.push({
+        price: {
+          gte: Number(priceStart),
+        },
+      });
+    }
+    if (priceEnd !== undefined) {
+      priceConditions.push({
+        price: {
+          lte: Number(priceEnd),
+        },
+      });
+    }
+    andCondition.push(...priceConditions);
+  }
 
+  const whereConditions: Prisma.UserWhereInput = {
+    AND: andCondition as any,
+    isDelete: false, // Always exclude deleted products
+  };
+
+  // Fetch filtered products
   const result = await prisma.product.findMany({
-    where: {
-      ...(whereConditions as any),
-      isDelete: false,
-    },
+    where: whereConditions as any,
     include: {
       category: true,
       subCategory: true,
@@ -611,22 +737,17 @@ const publicAllProductsDB = async (
           },
   });
 
+  // Count total filtered products
   const total = await prisma.product.count({
-    where: {
-      ...(whereConditions as any),
-      isDelete: false,
-    },
+    where: whereConditions as any,
   });
-  const meta = {
-    page,
-    limit,
-    total,
-  };
+
   return {
-    meta,
+    meta: { page, limit, total },
     result,
   };
 };
+
 
 export const productService = {
   createProductDB,

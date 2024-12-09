@@ -9,4 +9,6 @@ export const shopAllProductsFilterAbleFields: string[] = [
   "searchTerm",
   "categoryId",
   "subCategoryId",
+  "priceEnd",
+  "priceStart",
 ];
