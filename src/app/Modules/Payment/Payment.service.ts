@@ -475,7 +475,9 @@ const myAllPaymentInfoDB = async (
     where: {
       ...(whereConditions as any),
       userId: tokenUser?.id,
-      paymentStatus: PaymentStatus.confirm,
+      NOT: {
+        paymentStatus: PaymentStatus.pending,
+      },
     },
     include: {
       paymentAndProduct: {
@@ -505,7 +507,9 @@ const myAllPaymentInfoDB = async (
     where: {
       ...(whereConditions as any),
       userId: tokenUser?.id,
-      paymentStatus: PaymentStatus.confirm,
+      NOT: {
+        paymentStatus: PaymentStatus.pending,
+      },
     },
   });
   const meta = {
