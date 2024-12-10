@@ -108,10 +108,18 @@ const publicPromoCheck: RequestHandler = async (req, res, next) => {
 
 const publicAllProducts: RequestHandler = async (req, res, next) => {
   try {
-    const filters = pick(req.query, shopAllProductsFilterAbleFields);  
+    const filters = pick(req.query, shopAllProductsFilterAbleFields);
     const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
     const result = await productService.publicAllProductsDB(filters, options);
     res.send(successResponse(result, StatusCodes.OK, "find all product"));
+  } catch (error) {
+    next(error);
+  }
+};
+const publicCompareProduct: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await productService.publicCompareProductDB(req?.body);
+    res.send(successResponse(result, StatusCodes.OK, "find compare product"));
   } catch (error) {
     next(error);
   }
@@ -127,4 +135,5 @@ export const productController = {
   publicFlashSaleProduct,
   publicPromoCheck,
   publicAllProducts,
+  publicCompareProduct,
 };

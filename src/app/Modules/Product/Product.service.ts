@@ -3,6 +3,8 @@ import prisma from "../../shared/prisma";
 import { IPaginationOptions } from "../../interface/pagination";
 import { paginationHelper } from "../../helper/paginationHelper";
 import { shopAllProductsSearchAbleFields } from "./Product.const";
+import AppError from "../../Error-Handler/AppError";
+import { StatusCodes } from "http-status-codes";
 
 const createProductDB = async (tokenUser: any, payload: any) => {
   const vendorInfo = await prisma.user.findUniqueOrThrow({
@@ -653,7 +655,6 @@ const publicPromoCheckDB = async (payload: any) => {
 //   };
 // };
 
-
 const publicAllProductsDB = async (
   queryObj: any,
   options: IPaginationOptions
@@ -748,6 +749,20 @@ const publicAllProductsDB = async (
   };
 };
 
+const publicCompareProductDB = async (productIds: string[]) => {
+  if (productIds?.length > 3) {
+    throw new AppError(StatusCodes.NOT_ACCEPTABLE, "Longer then 3");
+  }
+  const result = await prisma.product.findMany({
+    where: {
+      isDelete: false,
+      id: {
+        in: productIds,
+      },
+    },
+  });
+  return result;
+};
 
 export const productService = {
   createProductDB,
@@ -759,4 +774,5 @@ export const productService = {
   publicFlashSaleProductDB,
   publicPromoCheckDB,
   publicAllProductsDB,
+  publicCompareProductDB,
 };
