@@ -760,6 +760,9 @@ const publicCompareProductDB = async (productIds: string[]) => {
         in: productIds,
       },
     },
+    include: {
+      category: true,
+    },
   });
   return result;
 };
