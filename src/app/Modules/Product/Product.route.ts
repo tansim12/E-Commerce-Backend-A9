@@ -42,7 +42,13 @@ router.get(
   productController.publicFlashSaleProduct
 );
 router.post("/promo/check", productController.publicPromoCheck);
-router.post("/compare/compare-products", productController.publicCompareProduct);
-
+router.post(
+  "/compare/compare-products",
+  productController.publicCompareProduct
+);
+router.post(
+  "/relevant/relevant-products",
+  productController.findRelevantProduct
+);
 
 export const productRoutes = router;

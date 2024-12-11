@@ -124,6 +124,21 @@ const publicCompareProduct: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const findRelevantProduct: RequestHandler = async (req, res, next) => {
+  const filters = pick(req.query, []);
+  const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+
+  try {
+    const result = await productService.findRelevantProductDB(
+      req?.body || [],
+      filters,
+      options
+    );
+    res.send(successResponse(result, StatusCodes.OK, "find relevant product"));
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const productController = {
   createProduct,
@@ -136,4 +151,5 @@ export const productController = {
   publicPromoCheck,
   publicAllProducts,
   publicCompareProduct,
+  findRelevantProduct,
 };

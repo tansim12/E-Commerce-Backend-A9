@@ -767,6 +767,74 @@ const publicCompareProductDB = async (productIds: string[]) => {
   return result;
 };
 
+const findRelevantProductDB = async (
+  categoryIds: string[],
+  queryObj: any,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+
+  if (categoryIds?.length > 0) {
+    const result = await prisma.product.findMany({
+      where: {
+        isDelete: false,
+        categoryId: {
+          in: categoryIds,
+        },
+      },
+
+      skip,
+      take: limit,
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    const total = await prisma.product.count({
+      where: {
+        isDelete: false,
+        categoryId: {
+          in: categoryIds,
+        },
+      },
+    });
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return {
+      meta,
+      result,
+    };
+  } else {
+    const result = await prisma.product.findMany({
+      where: {
+        isDelete: false,
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+      skip,
+      take: limit,
+    });
+    const total = await prisma.product.count();
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return {
+      meta,
+      result,
+    };
+  }
+};
+
 export const productService = {
   createProductDB,
   updateProductDB,
@@ -778,4 +846,5 @@ export const productService = {
   publicPromoCheckDB,
   publicAllProductsDB,
   publicCompareProductDB,
+  findRelevantProductDB,
 };
