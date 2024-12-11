@@ -37,9 +37,13 @@ const crateShopDB = async (tokenUser: any, payload: any) => {
   return result;
 };
 
-// todo
-const findSingleShopPublicDB = async (shopId: string) => {
-  // todo include added product,followers etc
+const findSingleShopPublicDB = async (
+  shopId: string,
+  queryObj: any,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+
   const result = await prisma.shop.findUniqueOrThrow({
     where: {
       id: shopId,
@@ -58,9 +62,33 @@ const findSingleShopPublicDB = async (shopId: string) => {
           },
         },
       },
+      shopFollow: true,
+      _count: true,
+      product: {
+        skip,
+        take: limit,
+        orderBy: {
+          updatedAt: "desc",
+        },
+      },
     },
   });
-  return result;
+
+  const total = await prisma.shop.count({
+    where: {
+      id: shopId,
+      isDelete: false,
+    },
+  });
+  const meta = {
+    page,
+    limit,
+    total: result?._count?.product,
+  };
+  return {
+    meta,
+    result,
+  };
 };
 
 // public all shop get

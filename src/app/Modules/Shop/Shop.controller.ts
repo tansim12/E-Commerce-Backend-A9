@@ -17,8 +17,12 @@ const createShop: RequestHandler = async (req, res, next) => {
 };
 const findSingleShopPublic: RequestHandler = async (req, res, next) => {
   try {
+    const filters = pick(req.query, []);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
     const result = await shopService.findSingleShopPublicDB(
-      req?.params?.shopId
+      req?.params?.shopId,
+      filters,
+      options
     );
     res.send(
       successResponse(
