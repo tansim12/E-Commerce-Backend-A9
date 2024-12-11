@@ -101,6 +101,15 @@ const adminFindAllShop: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const findSingleUserFollow: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await shopService.findSingleUserFollowDB(req?.user);
+    res.send(successResponse(result, StatusCodes.OK, "Find user follow"));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const shopController = {
   createShop,
   findAllShopPublic,
@@ -110,4 +119,5 @@ export const shopController = {
   vendorFindHisShop,
   updateShopInfo,
   adminFindAllShop,
+  findSingleUserFollow,
 };

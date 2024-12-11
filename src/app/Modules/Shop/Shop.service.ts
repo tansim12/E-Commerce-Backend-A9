@@ -337,6 +337,21 @@ const adminFindAllShopDB = async (
   };
 };
 
+const findSingleUserFollowDB = async (tokenUser: any) => {
+  const result = await prisma.shopFollow.findFirst({
+    where: {
+      userId: tokenUser?.id,
+    },
+  });
+  if (!result) {
+    return {
+      status: 201,
+      message: "No Table create",
+    };
+  }
+  return result;
+};
+
 export const shopService = {
   crateShopDB,
   findAllShopPublicDB,
@@ -346,4 +361,5 @@ export const shopService = {
   vendorFindHisShopDB,
   updateShopInfoDB,
   adminFindAllShopDB,
+  findSingleUserFollowDB,
 };

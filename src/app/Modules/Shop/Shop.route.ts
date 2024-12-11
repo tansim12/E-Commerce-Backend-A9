@@ -29,6 +29,11 @@ router.post(
   authMiddleWare(UserRole.admin, UserRole.user, UserRole.vendor),
   shopController.shopFollowing
 );
+router.get(
+  "/user/shop-following",
+  authMiddleWare(UserRole.admin, UserRole.user, UserRole.vendor),
+  shopController.findSingleUserFollow
+);
 router.put(
   "/user/shop-review",
   validationMiddleWare(shopFollowSchema.createShopReviewSchema),
