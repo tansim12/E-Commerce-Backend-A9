@@ -796,7 +796,7 @@ const productReviewByPaymentDB = (tokenUser, paymentId, payload) => __awaiter(vo
                             id: item,
                         },
                         data: {
-                            averageRating: averageRating,
+                            averageRating: Math.ceil(averageRating),
                             totalSubmitRating: totalSubmitRating,
                             totalUserGiveRating: totalUserGiveRating + 1,
                         },

@@ -899,7 +899,7 @@ const productReviewByPaymentDB = async (
               id: item,
             },
             data: {
-              averageRating: averageRating,
+              averageRating: Math.ceil(averageRating),
               totalSubmitRating: totalSubmitRating,
               totalUserGiveRating: totalUserGiveRating + 1,
             },
