@@ -857,11 +857,11 @@ const productReviewByPaymentDB = async (
   const productIds = paymentInfo.paymentAndProduct.map(
     (item: any) => item?.product?.id
   );
-  
+
   // check is user create review table
   if (paymentInfo?.userId === tokenUser?.id) {
     const result = await prisma.$transaction(async (tx) => {
-      // create review 
+      // create review
       const createReview = await tx.productReview.create({
         data: {
           paymentId: paymentInfo.id,
@@ -870,7 +870,7 @@ const productReviewByPaymentDB = async (
           rating: payload?.rating ? payload?.rating : null,
         },
       });
-      if (payload?.rating === 0 || payload?.rating) { 
+      if (payload?.rating === 0 || payload?.rating) {
         for (const item of productIds) {
           // Find the product
           const findProduct = await tx.product.findFirst({
@@ -878,19 +878,21 @@ const productReviewByPaymentDB = async (
               id: item,
             },
           });
-        
+
           if (!findProduct) {
             continue; // Skip if the product is not found
           }
-        
+
           // Calculate averageRating and totalSubmitRating
           const totalUserGiveRating = findProduct.totalUserGiveRating ?? 0;
           const averageRating =
             totalUserGiveRating > 0
-              ? (payload.rating + findProduct.totalSubmitRating) / (totalUserGiveRating + 1)
+              ? (payload.rating + findProduct.totalSubmitRating) /
+                (totalUserGiveRating + 1)
               : payload.rating;
-          const totalSubmitRating = payload.rating + (findProduct.totalSubmitRating || 0);
-        
+          const totalSubmitRating =
+            payload.rating + (findProduct.totalSubmitRating || 0);
+
           // Update product
           await tx.product.update({
             where: {
@@ -903,7 +905,6 @@ const productReviewByPaymentDB = async (
             },
           });
         }
-        
       }
       return createReview;
     });
@@ -912,8 +913,36 @@ const productReviewByPaymentDB = async (
       throw new AppError(StatusCodes.CONFLICT, "Some things went wrong");
     }
     return result;
+  } else {
+    throw new AppError(StatusCodes.CONFLICT, "User dose not match");
+  }
+};
+
+const vendorOrShopRepliedReviewsDB = async (tokenUser: any, payload: any) => {
+  const findProductReviewInfo = await prisma.productReview.findUniqueOrThrow({
+    where: {
+      userId_paymentId: {
+        userId: payload?.userId,
+        paymentId: payload?.paymentId,
+      },
+    },
+  });
+
+  if (!findProductReviewInfo?.shopMessage && payload?.shopMessage) {
+    const updateShopMessage = await prisma.productReview.update({
+      where:{
+        userId_paymentId:{
+          userId:findProductReviewInfo?.userId,
+          paymentId:findProductReviewInfo?.paymentId
+        }
+      },
+      data:{
+        shopMessage:payload?.shopMessage
+      }
+    })
+    return updateShopMessage;
   }else{
-    throw new AppError(StatusCodes.CONFLICT,"User dose not match")
+    throw new AppError(StatusCodes.CONFLICT,"shop message update failed")
   }
 };
 
@@ -930,4 +959,5 @@ export const productService = {
   publicCompareProductDB,
   findRelevantProductDB,
   productReviewByPaymentDB,
+  vendorOrShopRepliedReviewsDB,
 };

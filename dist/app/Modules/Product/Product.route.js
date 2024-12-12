@@ -23,4 +23,6 @@ router.get("/public/flash-sale/products", Product_controller_1.productController
 router.post("/promo/check", Product_controller_1.productController.publicPromoCheck);
 router.post("/compare/compare-products", Product_controller_1.productController.publicCompareProduct);
 router.post("/relevant/relevant-products", Product_controller_1.productController.findRelevantProduct);
+router.put("/payment/review/:paymentId", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.user, client_1.UserRole.admin, client_1.UserRole.vendor), Product_controller_1.productController.productReviewByPayment);
+router.post("/payment/review-replied", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor), Product_controller_1.productController.vendorOrShopRepliedReviews);
 exports.productRoutes = router;

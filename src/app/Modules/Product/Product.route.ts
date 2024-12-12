@@ -55,5 +55,10 @@ router.put(
   authMiddleWare(UserRole.user, UserRole.admin, UserRole.vendor),
   productController.productReviewByPayment
 );
+router.post(
+  "/payment/review-replied",
+  authMiddleWare(UserRole.admin, UserRole.vendor),
+  productController.vendorOrShopRepliedReviews
+);
 
 export const productRoutes = router;

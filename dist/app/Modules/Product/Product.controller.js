@@ -132,6 +132,25 @@ const findRelevantProduct = (req, res, next) => __awaiter(void 0, void 0, void 0
         next(error);
     }
 });
+const productReviewByPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const result = yield Product_service_1.productService.productReviewByPaymentDB(req === null || req === void 0 ? void 0 : req.user, (_a = req === null || req === void 0 ? void 0 : req.params) === null || _a === void 0 ? void 0 : _a.paymentId, req === null || req === void 0 ? void 0 : req.body);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "Product review by payment create done"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const vendorOrShopRepliedReviews = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield Product_service_1.productService.vendorOrShopRepliedReviewsDB(req === null || req === void 0 ? void 0 : req.user, req === null || req === void 0 ? void 0 : req.body);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "Product review by payment create done"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
 exports.productController = {
     createProduct,
     updateProduct,
@@ -144,4 +163,6 @@ exports.productController = {
     publicAllProducts,
     publicCompareProduct,
     findRelevantProduct,
+    productReviewByPayment,
+    vendorOrShopRepliedReviews,
 };

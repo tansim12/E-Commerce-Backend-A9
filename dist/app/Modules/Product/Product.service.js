@@ -744,6 +744,103 @@ const findRelevantProductDB = (categoryIds, queryObj, options) => __awaiter(void
         };
     }
 });
+const productReviewByPaymentDB = (tokenUser, paymentId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const paymentInfo = yield prisma_1.default.payment.findUniqueOrThrow({
+        where: {
+            id: paymentId,
+            paymentStatus: client_1.PaymentStatus.confirm,
+        },
+        include: {
+            paymentAndProduct: {
+                select: {
+                    product: true,
+                },
+            },
+        },
+    });
+    const productIds = paymentInfo.paymentAndProduct.map((item) => { var _a; return (_a = item === null || item === void 0 ? void 0 : item.product) === null || _a === void 0 ? void 0 : _a.id; });
+    // check is user create review table
+    if ((paymentInfo === null || paymentInfo === void 0 ? void 0 : paymentInfo.userId) === (tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id)) {
+        const result = yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            var _a;
+            // create review
+            const createReview = yield tx.productReview.create({
+                data: {
+                    paymentId: paymentInfo.id,
+                    userId: paymentInfo.userId,
+                    userMessage: payload === null || payload === void 0 ? void 0 : payload.userMessage,
+                    rating: (payload === null || payload === void 0 ? void 0 : payload.rating) ? payload === null || payload === void 0 ? void 0 : payload.rating : null,
+                },
+            });
+            if ((payload === null || payload === void 0 ? void 0 : payload.rating) === 0 || (payload === null || payload === void 0 ? void 0 : payload.rating)) {
+                for (const item of productIds) {
+                    // Find the product
+                    const findProduct = yield tx.product.findFirst({
+                        where: {
+                            id: item,
+                        },
+                    });
+                    if (!findProduct) {
+                        continue; // Skip if the product is not found
+                    }
+                    // Calculate averageRating and totalSubmitRating
+                    const totalUserGiveRating = (_a = findProduct.totalUserGiveRating) !== null && _a !== void 0 ? _a : 0;
+                    const averageRating = totalUserGiveRating > 0
+                        ? (payload.rating + findProduct.totalSubmitRating) /
+                            (totalUserGiveRating + 1)
+                        : payload.rating;
+                    const totalSubmitRating = payload.rating + (findProduct.totalSubmitRating || 0);
+                    // Update product
+                    yield tx.product.update({
+                        where: {
+                            id: item,
+                        },
+                        data: {
+                            averageRating: averageRating,
+                            totalSubmitRating: totalSubmitRating,
+                            totalUserGiveRating: totalUserGiveRating + 1,
+                        },
+                    });
+                }
+            }
+            return createReview;
+        }));
+        if (!result) {
+            throw new AppError_1.default(http_status_codes_1.StatusCodes.CONFLICT, "Some things went wrong");
+        }
+        return result;
+    }
+    else {
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.CONFLICT, "User dose not match");
+    }
+});
+const vendorOrShopRepliedReviewsDB = (tokenUser, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const findProductReviewInfo = yield prisma_1.default.productReview.findUniqueOrThrow({
+        where: {
+            userId_paymentId: {
+                userId: payload === null || payload === void 0 ? void 0 : payload.userId,
+                paymentId: payload === null || payload === void 0 ? void 0 : payload.paymentId,
+            },
+        },
+    });
+    if (!(findProductReviewInfo === null || findProductReviewInfo === void 0 ? void 0 : findProductReviewInfo.shopMessage) && (payload === null || payload === void 0 ? void 0 : payload.shopMessage)) {
+        const updateShopMessage = yield prisma_1.default.productReview.update({
+            where: {
+                userId_paymentId: {
+                    userId: findProductReviewInfo === null || findProductReviewInfo === void 0 ? void 0 : findProductReviewInfo.userId,
+                    paymentId: findProductReviewInfo === null || findProductReviewInfo === void 0 ? void 0 : findProductReviewInfo.paymentId
+                }
+            },
+            data: {
+                shopMessage: payload === null || payload === void 0 ? void 0 : payload.shopMessage
+            }
+        });
+        return updateShopMessage;
+    }
+    else {
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.CONFLICT, "shop message update failed");
+    }
+});
 exports.productService = {
     createProductDB,
     updateProductDB,
@@ -756,4 +853,6 @@ exports.productService = {
     publicAllProductsDB,
     publicCompareProductDB,
     findRelevantProductDB,
+    productReviewByPaymentDB,
+    vendorOrShopRepliedReviewsDB,
 };
