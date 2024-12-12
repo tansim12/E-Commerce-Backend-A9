@@ -31,6 +31,7 @@ model User {
   category           Category[]
   subCategory        SubCategory[]
   payment            Payment[]
+  productReview     ProductReview[]
 
   @@map("users")
 }
@@ -132,6 +133,7 @@ model SubCategory {
   @@map("subCategories")
 }
 
+
 model Product {
   id                 String    @id @default(uuid())
   productName        String
@@ -165,6 +167,25 @@ model Product {
   @@map("products")
 }
 
+
+
+model ProductReview {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  paymentId    String
+  payment      Payment     @relation(fields: [paymentId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userMessage  String?
+  shopMessage  String?
+  rating   Int?
+  isDelete Boolean @default(false)
+
+  @@id([userId, paymentId])
+  @@map("productReviews")
+}
+
 model PaymentAndProduct {
   id          String   @id @default(uuid())
   productId   String
@@ -196,6 +217,7 @@ model Payment {
   updatedAt     DateTime @updatedAt
 
   paymentAndProduct PaymentAndProduct[]
+   productReview     ProductReview[]
 }
 
 enum UserRole {
