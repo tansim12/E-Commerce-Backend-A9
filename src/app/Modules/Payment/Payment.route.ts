@@ -22,6 +22,11 @@ router.get(
   authMiddleWare(UserRole?.admin, UserRole.vendor),
   paymentController.allPaymentInfo
 );
+router.get(
+  "/shop-all-payment-info",
+  authMiddleWare(UserRole.vendor),
+  paymentController.shopAllPayment
+);
 
 router.post("/callback", paymentController.callback);
 router.put(

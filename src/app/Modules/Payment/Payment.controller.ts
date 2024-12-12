@@ -53,7 +53,21 @@ const allPaymentInfo: RequestHandler = async (req, res, next) => {
     const filters = pick(req.query, paymentInfoFilterAbleFields);
     const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
     const result = await paymentService.allPaymentInfoDB(filters, options);
-    res.send(successResponse(result, StatusCodes.OK, "find all user"));
+    res.send(successResponse(result, StatusCodes.OK, "find all payment"));
+  } catch (error) {
+    next(error);
+  }
+};
+const shopAllPayment: RequestHandler = async (req, res, next) => {
+  try {
+    const filters = pick(req.query, paymentInfoFilterAbleFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await paymentService.shopAllPaymentDB(
+      req?.user,
+      filters,
+      options
+    );
+    res.send(successResponse(result, StatusCodes.OK, "find all shop payment"));
   } catch (error) {
     next(error);
   }
@@ -76,4 +90,5 @@ export const paymentController = {
   myAllPaymentInfo,
   allPaymentInfo,
   adminAndVendorUpdatePayment,
+  shopAllPayment,
 };

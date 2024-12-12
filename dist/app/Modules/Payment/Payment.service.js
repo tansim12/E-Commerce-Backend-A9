@@ -478,6 +478,12 @@ const allPaymentInfoDB = (queryObj, options) => __awaiter(void 0, void 0, void 0
                     },
                 },
             },
+            productReview: true,
+            _count: {
+                select: {
+                    productReview: true,
+                },
+            },
         },
         skip,
         take: limit,
@@ -492,6 +498,82 @@ const allPaymentInfoDB = (queryObj, options) => __awaiter(void 0, void 0, void 0
     const total = yield prisma_1.default.payment.count({
         where: Object.assign(Object.assign({}, whereConditions), { NOT: {
                 paymentStatus: client_1.PaymentStatus.pending,
+            } }),
+    });
+    const meta = {
+        page,
+        limit,
+        total,
+    };
+    return {
+        meta,
+        result,
+    };
+});
+// shop  all payments
+const shopAllPaymentDB = (tokenUser, queryObj, options) => __awaiter(void 0, void 0, void 0, function* () {
+    const { page, limit, skip } = paginationHelper_1.paginationHelper.calculatePagination(options);
+    const { searchTerm } = queryObj, filterData = __rest(queryObj, ["searchTerm"]);
+    const andCondition = [];
+    if (queryObj.searchTerm) {
+        andCondition.push({
+            OR: Payment_const_1.paymentInfoSearchAbleFields.map((field) => ({
+                [field]: {
+                    contains: queryObj.searchTerm,
+                    mode: "insensitive",
+                },
+            })),
+        });
+    }
+    if (Object.keys(filterData).length > 0) {
+        andCondition.push({
+            AND: Object.keys(filterData).map((key) => ({
+                [key]: {
+                    equals: filterData[key],
+                },
+            })),
+        });
+    }
+    const whereConditions = { AND: andCondition };
+    const result = yield prisma_1.default.payment.findMany({
+        where: Object.assign(Object.assign({}, whereConditions), { NOT: {
+                paymentStatus: client_1.PaymentStatus.pending,
+            }, shop: {
+                vendorId: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id,
+            } }),
+        include: {
+            paymentAndProduct: {
+                include: {
+                    product: {
+                        select: {
+                            productName: true,
+                            images: true,
+                        },
+                    },
+                },
+            },
+            productReview: true,
+            _count: {
+                select: {
+                    productReview: true,
+                },
+            },
+        },
+        skip,
+        take: limit,
+        orderBy: options.sortBy && options.sortOrder
+            ? {
+                [options.sortBy]: options.sortOrder,
+            }
+            : {
+                createdAt: "desc",
+            },
+    });
+    const total = yield prisma_1.default.payment.count({
+        where: Object.assign(Object.assign({}, whereConditions), { NOT: {
+                paymentStatus: client_1.PaymentStatus.pending,
+            }, shop: {
+                vendorId: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id,
             } }),
     });
     const meta = {
@@ -544,4 +626,5 @@ exports.paymentService = {
     myAllPaymentInfoDB,
     allPaymentInfoDB,
     adminAndVendorUpdatePaymentDB,
+    shopAllPaymentDB,
 };

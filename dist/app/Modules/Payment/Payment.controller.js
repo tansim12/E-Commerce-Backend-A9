@@ -62,7 +62,18 @@ const allPaymentInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         const filters = (0, pick_1.default)(req.query, Payment_const_1.paymentInfoFilterAbleFields);
         const options = (0, pick_1.default)(req.query, ["limit", "page", "sortBy", "sortOrder"]);
         const result = yield Payment_service_1.paymentService.allPaymentInfoDB(filters, options);
-        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "find all user"));
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "find all payment"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const shopAllPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const filters = (0, pick_1.default)(req.query, Payment_const_1.paymentInfoFilterAbleFields);
+        const options = (0, pick_1.default)(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+        const result = yield Payment_service_1.paymentService.shopAllPaymentDB(req === null || req === void 0 ? void 0 : req.user, filters, options);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "find all shop payment"));
     }
     catch (error) {
         next(error);
@@ -84,4 +95,5 @@ exports.paymentController = {
     myAllPaymentInfo,
     allPaymentInfo,
     adminAndVendorUpdatePayment,
+    shopAllPayment,
 };

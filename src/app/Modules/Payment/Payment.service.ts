@@ -569,6 +569,12 @@ const allPaymentInfoDB = async (queryObj: any, options: IPaginationOptions) => {
           },
         },
       },
+      productReview: true,
+      _count: {
+        select: {
+          productReview: true,
+        },
+      },
     },
     skip,
     take: limit,
@@ -587,6 +593,99 @@ const allPaymentInfoDB = async (queryObj: any, options: IPaginationOptions) => {
       ...(whereConditions as any),
       NOT: {
         paymentStatus: PaymentStatus.pending,
+      },
+    },
+  });
+  const meta = {
+    page,
+    limit,
+    total,
+  };
+  return {
+    meta,
+    result,
+  };
+};
+// shop  all payments
+const shopAllPaymentDB = async (
+  tokenUser: any,
+  queryObj: any,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = queryObj;
+
+  const andCondition = [];
+  if (queryObj.searchTerm) {
+    andCondition.push({
+      OR: paymentInfoSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: queryObj.searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+  if (Object.keys(filterData).length > 0) {
+    andCondition.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: filterData[key as never],
+        },
+      })),
+    });
+  }
+
+  const whereConditions: Prisma.UserWhereInput = { AND: andCondition as any };
+
+  const result = await prisma.payment.findMany({
+    where: {
+      ...(whereConditions as any),
+      NOT: {
+        paymentStatus: PaymentStatus.pending,
+      },
+      shop: {
+        vendorId: tokenUser?.id,
+      },
+    },
+    include: {
+      paymentAndProduct: {
+        include: {
+          product: {
+            select: {
+              productName: true,
+              images: true,
+            },
+          },
+        },
+      },
+      productReview: true,
+      _count: {
+        select: {
+          productReview: true,
+        },
+      },
+    },
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
+  });
+
+  const total = await prisma.payment.count({
+    where: {
+      ...(whereConditions as any),
+      NOT: {
+        paymentStatus: PaymentStatus.pending,
+      },
+      shop: {
+        vendorId: tokenUser?.id,
       },
     },
   });
@@ -625,7 +724,7 @@ const adminAndVendorUpdatePaymentDB = async (
         paymentStatus: payload?.paymentStatus as any,
       },
     });
-     await tx.paymentAndProduct.updateMany({
+    await tx.paymentAndProduct.updateMany({
       where: {
         id: {
           in: paymentAndProductIds,
@@ -645,4 +744,5 @@ export const paymentService = {
   myAllPaymentInfoDB,
   allPaymentInfoDB,
   adminAndVendorUpdatePaymentDB,
+  shopAllPaymentDB,
 };
