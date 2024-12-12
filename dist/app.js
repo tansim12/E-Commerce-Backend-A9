@@ -6,6 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const globalErrorHandler_1 = __importDefault(require("./app/Error-Handler/globalErrorHandler"));
 const normalMiddleware_1 = __importDefault(require("./app/middleware/normalMiddleware"));
+const Auth_route_1 = require("./app/Modules/Auth/Auth.route");
+const User_route_1 = require("./app/Modules/User/User.route");
+const Shop_route_1 = require("./app/Modules/Shop/Shop.route");
+const CategoryAndSubCategory_route_1 = require("./app/Modules/CategoryAndSubCategory/CategoryAndSubCategory.route");
+const Product_route_1 = require("./app/Modules/Product/Product.route");
+const Payment_route_1 = require("./app/Modules/Payment/Payment.route");
 const app = (0, express_1.default)();
 (0, normalMiddleware_1.default)(app);
 app.get("/", (req, res) => {
@@ -13,6 +19,12 @@ app.get("/", (req, res) => {
         Message: "A-9-Postgres-Prisma  server..",
     });
 });
+app.use("/api/auth", Auth_route_1.AuthRoutes);
+app.use("/api/user", User_route_1.userRouter);
+app.use("/api/shop", Shop_route_1.shopRouter);
+app.use("/api/cAndSubC", CategoryAndSubCategory_route_1.categoryAndSubCategoryRouter);
+app.use("/api/product", Product_route_1.productRoutes);
+app.use("/api/payment", Payment_route_1.paymentRoutes);
 app.all("*", (req, res, next) => {
     const error = new Error(`Can't find ${req.url} on the server`);
     next(error);

@@ -12,27 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.emailSender = void 0;
-const nodemailer_1 = __importDefault(require("nodemailer"));
+exports.verifyPayment = void 0;
+const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const config_1 = __importDefault(require("../config"));
 dotenv_1.default.config();
-const emailSender = (to, html) => __awaiter(void 0, void 0, void 0, function* () {
-    const transporter = nodemailer_1.default.createTransport({
-        host: "smtp.gmail.com.",
-        port: 587,
-        secure: process.env.NODE_ENV === "production",
-        auth: {
-            user: config_1.default.emailSender.email,
-            pass: config_1.default.emailSender.app_pass,
+const verifyPayment = (txnId) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield axios_1.default.get(process.env.AAMAR_PAY_SEARCH_TNX_BASE_URL, {
+        params: {
+            signature_key: process.env.AAMAR_PAY_SIGNATURE_KEY,
+            store_id: "aamarpaytest",
+            request_id: txnId,
+            type: "json",
         },
     });
-    yield transporter.sendMail({
-        from: config_1.default.emailSender.email, // sender address
-        to, // list of receivers
-        subject: "E-Commerce forget password within 5 mins!", // Subject line
-        text: "Forget Password", // plain text body
-        html, // html body
-    });
+    return response === null || response === void 0 ? void 0 : response.data;
 });
-exports.emailSender = emailSender;
+exports.verifyPayment = verifyPayment;

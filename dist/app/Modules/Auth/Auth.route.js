@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const Auth_controller_1 = require("./Auth.controller");
+const client_1 = require("@prisma/client");
+const authMiddleware_1 = require("../../middleware/authMiddleware");
+const validationMiddleWare_1 = __importDefault(require("../../middleware/validationMiddleWare"));
+const Auth_zodValidation_1 = require("./Auth.zodValidation");
+const router = express_1.default.Router();
+router.post("/signup", (0, validationMiddleWare_1.default)(Auth_zodValidation_1.authSchemas.signupSchema), Auth_controller_1.AuthController.signUp);
+router.post("/login", (0, validationMiddleWare_1.default)(Auth_zodValidation_1.authSchemas.loginSchema), Auth_controller_1.AuthController.loginUser);
+router.post("/refresh-token", Auth_controller_1.AuthController.refreshToken);
+router.post("/change-password", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.user, client_1.UserRole.admin, client_1.UserRole.vendor), Auth_controller_1.AuthController.changePassword);
+router.post("/forget-password", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.user, client_1.UserRole.admin, client_1.UserRole.vendor), Auth_controller_1.AuthController.forgotPassword);
+router.post("/reset-password", Auth_controller_1.AuthController.resetPassword);
+exports.AuthRoutes = router;

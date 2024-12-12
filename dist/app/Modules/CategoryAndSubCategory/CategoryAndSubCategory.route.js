@@ -1,0 +1,23 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.categoryAndSubCategoryRouter = void 0;
+const express_1 = __importDefault(require("express"));
+const client_1 = require("@prisma/client");
+const authMiddleware_1 = require("../../middleware/authMiddleware");
+const validationMiddleWare_1 = __importDefault(require("../../middleware/validationMiddleWare"));
+const CategoryAndSubCategory_zodValidation_1 = require("./CategoryAndSubCategory.zodValidation");
+const CategoryAndSubCategory_controller_1 = require("./CategoryAndSubCategory.controller");
+const router = express_1.default.Router();
+router.post("/create-category", (0, validationMiddleWare_1.default)(CategoryAndSubCategory_zodValidation_1.categoryAndSubCategorySchema.createCategorySchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), CategoryAndSubCategory_controller_1.categoryAndSubCategoryController.createCategory);
+router.put("/update-category/:categoryId", (0, validationMiddleWare_1.default)(CategoryAndSubCategory_zodValidation_1.categoryAndSubCategorySchema.updateCategorySchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), CategoryAndSubCategory_controller_1.categoryAndSubCategoryController.updateCategory);
+router.post("/create-sub-category", (0, validationMiddleWare_1.default)(CategoryAndSubCategory_zodValidation_1.categoryAndSubCategorySchema.createSubCategorySchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), CategoryAndSubCategory_controller_1.categoryAndSubCategoryController.createSubCategory);
+router.put("/update-sub-category/:subCategoryId", (0, validationMiddleWare_1.default)(CategoryAndSubCategory_zodValidation_1.categoryAndSubCategorySchema.createCategorySchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), CategoryAndSubCategory_controller_1.categoryAndSubCategoryController.updateSubCategory);
+router.get("/category", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), CategoryAndSubCategory_controller_1.categoryAndSubCategoryController.findAllCategory);
+router.get("/sub-category", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), CategoryAndSubCategory_controller_1.categoryAndSubCategoryController.findAllSubCategory);
+router.get("/category/admin/allCategory", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor), CategoryAndSubCategory_controller_1.categoryAndSubCategoryController.existFindAllCategory);
+router.get("/category/categoryBaseSubCategory/:categoryId", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor), CategoryAndSubCategory_controller_1.categoryAndSubCategoryController.singleCategoryBaseFindAllSubCategory);
+router.get("/", CategoryAndSubCategory_controller_1.categoryAndSubCategoryController.publicFindAllCategoryWithSubCategory);
+exports.categoryAndSubCategoryRouter = router;

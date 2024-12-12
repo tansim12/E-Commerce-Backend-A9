@@ -1,0 +1,23 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.shopRouter = void 0;
+const express_1 = __importDefault(require("express"));
+const client_1 = require("@prisma/client");
+const authMiddleware_1 = require("../../middleware/authMiddleware");
+const Shop_controller_1 = require("./Shop.controller");
+const validationMiddleWare_1 = __importDefault(require("../../middleware/validationMiddleWare"));
+const Shop_zodValidation_1 = require("./Shop.zodValidation");
+const router = express_1.default.Router();
+router.post("/", (0, validationMiddleWare_1.default)(Shop_zodValidation_1.shopFollowSchema.shopCreateSchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor), Shop_controller_1.shopController.createShop);
+router.put("/:shopId", (0, validationMiddleWare_1.default)(Shop_zodValidation_1.shopFollowSchema.shopUpdateSchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor), Shop_controller_1.shopController.updateShopInfo);
+router.get("/", Shop_controller_1.shopController.findAllShopPublic);
+router.get("/:shopId", Shop_controller_1.shopController.findSingleShopPublic);
+router.post("/user/shop-following", (0, validationMiddleWare_1.default)(Shop_zodValidation_1.shopFollowSchema.createShopFollowSchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.user, client_1.UserRole.vendor), Shop_controller_1.shopController.shopFollowing);
+router.get("/user/shop-following", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.user, client_1.UserRole.vendor), Shop_controller_1.shopController.findSingleUserFollow);
+router.put("/user/shop-review", (0, validationMiddleWare_1.default)(Shop_zodValidation_1.shopFollowSchema.createShopReviewSchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.user, client_1.UserRole.vendor), Shop_controller_1.shopController.shopReview);
+router.get("/vendor/vendor-my-shop", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor), Shop_controller_1.shopController.vendorFindHisShop);
+router.get("/admin/find-all-shops", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), Shop_controller_1.shopController.adminFindAllShop);
+exports.shopRouter = router;
