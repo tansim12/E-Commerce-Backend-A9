@@ -1,4 +1,4 @@
-import { Prisma, UserRole, UserStatus } from "@prisma/client";
+import { PaymentStatus, Prisma, UserRole, UserStatus } from "@prisma/client";
 import prisma from "../../shared/prisma";
 import { IPaginationOptions } from "../../interface/pagination";
 import { paginationHelper } from "../../helper/paginationHelper";
@@ -835,6 +835,88 @@ const findRelevantProductDB = async (
   }
 };
 
+const productReviewByPaymentDB = async (
+  tokenUser: any,
+  paymentId: string,
+  payload: any
+) => {
+  const paymentInfo = await prisma.payment.findUniqueOrThrow({
+    where: {
+      id: paymentId,
+      paymentStatus: PaymentStatus.confirm,
+    },
+    include: {
+      paymentAndProduct: {
+        select: {
+          product: true,
+        },
+      },
+    },
+  });
+
+  const productIds = paymentInfo.paymentAndProduct.map(
+    (item: any) => item?.product?.id
+  );
+  
+  // check is user create review table
+  if (paymentInfo?.userId === tokenUser?.id) {
+    const result = await prisma.$transaction(async (tx) => {
+      // create review 
+      const createReview = await tx.productReview.create({
+        data: {
+          paymentId: paymentInfo.id,
+          userId: paymentInfo.userId,
+          userMessage: payload?.userMessage,
+          rating: payload?.rating ? payload?.rating : null,
+        },
+      });
+      if (payload?.rating === 0 || payload?.rating) { 
+        for (const item of productIds) {
+          // Find the product
+          const findProduct = await tx.product.findFirst({
+            where: {
+              id: item,
+            },
+          });
+        
+          if (!findProduct) {
+            continue; // Skip if the product is not found
+          }
+        
+          // Calculate averageRating and totalSubmitRating
+          const totalUserGiveRating = findProduct.totalUserGiveRating ?? 0;
+          const averageRating =
+            totalUserGiveRating > 0
+              ? (payload.rating + findProduct.totalSubmitRating) / (totalUserGiveRating + 1)
+              : payload.rating;
+          const totalSubmitRating = payload.rating + (findProduct.totalSubmitRating || 0);
+        
+          // Update product
+          await tx.product.update({
+            where: {
+              id: item,
+            },
+            data: {
+              averageRating: averageRating,
+              totalSubmitRating: totalSubmitRating,
+              totalUserGiveRating: totalUserGiveRating + 1,
+            },
+          });
+        }
+        
+      }
+      return createReview;
+    });
+
+    if (!result) {
+      throw new AppError(StatusCodes.CONFLICT, "Some things went wrong");
+    }
+    return result;
+  }else{
+    throw new AppError(StatusCodes.CONFLICT,"User dose not match")
+  }
+};
+
 export const productService = {
   createProductDB,
   updateProductDB,
@@ -847,4 +929,5 @@ export const productService = {
   publicAllProductsDB,
   publicCompareProductDB,
   findRelevantProductDB,
+  productReviewByPaymentDB,
 };

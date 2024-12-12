@@ -153,6 +153,7 @@ model Product {
   description        String
   totalSubmitRating  Int       @default(0)
   averageRating      Int       @default(0)
+  totalUserGiveRating Int     @default(0)
 
   images            String[]
   categoryId        String

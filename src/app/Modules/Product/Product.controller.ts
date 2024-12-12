@@ -139,6 +139,24 @@ const findRelevantProduct: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const productReviewByPayment: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await productService.productReviewByPaymentDB(
+      req?.user,
+      req?.params?.paymentId,
+      req?.body
+    );
+    res.send(
+      successResponse(
+        result,
+        StatusCodes.OK,
+        "Product review by payment create done"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const productController = {
   createProduct,
@@ -152,4 +170,5 @@ export const productController = {
   publicAllProducts,
   publicCompareProduct,
   findRelevantProduct,
+  productReviewByPayment,
 };

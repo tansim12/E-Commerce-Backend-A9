@@ -50,5 +50,10 @@ router.post(
   "/relevant/relevant-products",
   productController.findRelevantProduct
 );
+router.put(
+  "/payment/review/:paymentId",
+  authMiddleWare(UserRole.user, UserRole.admin, UserRole.vendor),
+  productController.productReviewByPayment
+);
 
 export const productRoutes = router;
