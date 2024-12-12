@@ -412,6 +412,7 @@ const myAllPaymentInfoDB = (tokenUser, queryObj, options) => __awaiter(void 0, v
                     },
                 },
             },
+            productReview: true
         },
         skip,
         take: limit,

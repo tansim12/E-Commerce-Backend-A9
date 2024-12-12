@@ -14,7 +14,7 @@ router.post(
 );
 router.get(
   "/my-payment-info",
-  authMiddleWare(UserRole?.admin, UserRole.user),
+  authMiddleWare(UserRole?.admin, UserRole.user, UserRole.vendor),
   paymentController.myAllPaymentInfo
 );
 router.get(
