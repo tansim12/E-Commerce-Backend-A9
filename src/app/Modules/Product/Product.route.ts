@@ -60,5 +60,9 @@ router.post(
   authMiddleWare(UserRole.admin, UserRole.vendor),
   productController.vendorOrShopRepliedReviews
 );
+router.get(
+  "/public/payment/review-info/:productId",
+  productController.findSingleProductAllReview
+);
 
 export const productRoutes = router;

@@ -828,18 +828,37 @@ const vendorOrShopRepliedReviewsDB = (tokenUser, payload) => __awaiter(void 0, v
             where: {
                 userId_paymentId: {
                     userId: findProductReviewInfo === null || findProductReviewInfo === void 0 ? void 0 : findProductReviewInfo.userId,
-                    paymentId: findProductReviewInfo === null || findProductReviewInfo === void 0 ? void 0 : findProductReviewInfo.paymentId
-                }
+                    paymentId: findProductReviewInfo === null || findProductReviewInfo === void 0 ? void 0 : findProductReviewInfo.paymentId,
+                },
             },
             data: {
-                shopMessage: payload === null || payload === void 0 ? void 0 : payload.shopMessage
-            }
+                shopMessage: payload === null || payload === void 0 ? void 0 : payload.shopMessage,
+            },
         });
         return updateShopMessage;
     }
     else {
         throw new AppError_1.default(http_status_codes_1.StatusCodes.CONFLICT, "shop message update failed");
     }
+});
+const findSingleProductAllReviewDB = (productId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.productReview.findMany({
+        where: {
+            payment: {
+                paymentAndProduct: {
+                    some: {
+                        productId,
+                        paymentStatus: client_1.PaymentStatus.confirm,
+                    },
+                },
+            },
+        },
+        take: 15,
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+    return result;
 });
 exports.productService = {
     createProductDB,
@@ -855,4 +874,5 @@ exports.productService = {
     findRelevantProductDB,
     productReviewByPaymentDB,
     vendorOrShopRepliedReviewsDB,
+    findSingleProductAllReviewDB,
 };

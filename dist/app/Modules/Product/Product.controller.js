@@ -151,6 +151,16 @@ const vendorOrShopRepliedReviews = (req, res, next) => __awaiter(void 0, void 0,
         next(error);
     }
 });
+const findSingleProductAllReview = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const result = yield Product_service_1.productService.findSingleProductAllReviewDB((_a = req === null || req === void 0 ? void 0 : req.params) === null || _a === void 0 ? void 0 : _a.productId);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "Product all review find "));
+    }
+    catch (error) {
+        next(error);
+    }
+});
 exports.productController = {
     createProduct,
     updateProduct,
@@ -165,4 +175,5 @@ exports.productController = {
     findRelevantProduct,
     productReviewByPayment,
     vendorOrShopRepliedReviews,
+    findSingleProductAllReview,
 };

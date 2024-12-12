@@ -930,20 +930,40 @@ const vendorOrShopRepliedReviewsDB = async (tokenUser: any, payload: any) => {
 
   if (!findProductReviewInfo?.shopMessage && payload?.shopMessage) {
     const updateShopMessage = await prisma.productReview.update({
-      where:{
-        userId_paymentId:{
-          userId:findProductReviewInfo?.userId,
-          paymentId:findProductReviewInfo?.paymentId
-        }
+      where: {
+        userId_paymentId: {
+          userId: findProductReviewInfo?.userId,
+          paymentId: findProductReviewInfo?.paymentId,
+        },
       },
-      data:{
-        shopMessage:payload?.shopMessage
-      }
-    })
+      data: {
+        shopMessage: payload?.shopMessage,
+      },
+    });
     return updateShopMessage;
-  }else{
-    throw new AppError(StatusCodes.CONFLICT,"shop message update failed")
+  } else {
+    throw new AppError(StatusCodes.CONFLICT, "shop message update failed");
   }
+};
+
+const findSingleProductAllReviewDB = async (productId: string) => {
+  const result = await prisma.productReview.findMany({
+    where: {
+      payment: {
+        paymentAndProduct: {
+          some: {
+            productId,
+            paymentStatus: PaymentStatus.confirm,
+          },
+        },
+      },
+    },
+    take: 15,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return result;
 };
 
 export const productService = {
@@ -960,4 +980,5 @@ export const productService = {
   findRelevantProductDB,
   productReviewByPaymentDB,
   vendorOrShopRepliedReviewsDB,
+  findSingleProductAllReviewDB,
 };

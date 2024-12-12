@@ -174,6 +174,18 @@ const vendorOrShopRepliedReviews: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const findSingleProductAllReview: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await productService.findSingleProductAllReviewDB(
+      req?.params?.productId
+    );
+    res.send(
+      successResponse(result, StatusCodes.OK, "Product all review find ")
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const productController = {
   createProduct,
@@ -189,4 +201,5 @@ export const productController = {
   findRelevantProduct,
   productReviewByPayment,
   vendorOrShopRepliedReviews,
+  findSingleProductAllReview,
 };
