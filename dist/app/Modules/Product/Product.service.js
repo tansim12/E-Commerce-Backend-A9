@@ -853,6 +853,18 @@ const findSingleProductAllReviewDB = (productId) => __awaiter(void 0, void 0, vo
                 },
             },
         },
+        include: {
+            user: {
+                select: {
+                    name: true,
+                    userProfile: {
+                        select: {
+                            profilePhoto: true,
+                        },
+                    },
+                },
+            },
+        },
         take: 15,
         orderBy: {
             createdAt: "desc",

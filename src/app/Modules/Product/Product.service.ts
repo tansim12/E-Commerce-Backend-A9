@@ -958,6 +958,18 @@ const findSingleProductAllReviewDB = async (productId: string) => {
         },
       },
     },
+    include: {
+      user: {
+        select: {
+          name: true,
+          userProfile: {
+            select: {
+              profilePhoto: true,
+            },
+          },
+        },
+      },
+    },
     take: 15,
     orderBy: {
       createdAt: "desc",
