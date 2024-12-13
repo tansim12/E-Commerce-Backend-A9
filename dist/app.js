@@ -12,6 +12,7 @@ const Shop_route_1 = require("./app/Modules/Shop/Shop.route");
 const CategoryAndSubCategory_route_1 = require("./app/Modules/CategoryAndSubCategory/CategoryAndSubCategory.route");
 const Product_route_1 = require("./app/Modules/Product/Product.route");
 const Payment_route_1 = require("./app/Modules/Payment/Payment.route");
+const Analytics_route_1 = require("./app/Modules/Analytics/Analytics.route");
 const app = (0, express_1.default)();
 (0, normalMiddleware_1.default)(app);
 app.get("/", (req, res) => {
@@ -25,6 +26,7 @@ app.use("/api/shop", Shop_route_1.shopRouter);
 app.use("/api/cAndSubC", CategoryAndSubCategory_route_1.categoryAndSubCategoryRouter);
 app.use("/api/product", Product_route_1.productRoutes);
 app.use("/api/payment", Payment_route_1.paymentRoutes);
+app.use("/api/analytics", Analytics_route_1.analyticsRoutes);
 app.all("*", (req, res, next) => {
     const error = new Error(`Can't find ${req.url} on the server`);
     next(error);
