@@ -128,6 +128,16 @@ const findMyProfileDB = async (tokenUser: any) => {
       createdAt: true,
       updatedAt: true,
       userProfile: true,
+      shopFollow:{
+        select:{
+          shop:{
+            select:{
+              name:true,
+              logo:true
+            }
+          }
+        }
+      }
     },
   });
 

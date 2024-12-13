@@ -103,7 +103,7 @@ const adminFindAllShop: RequestHandler = async (req, res, next) => {
 };
 const findSingleUserFollow: RequestHandler = async (req, res, next) => {
   try {
-    const result = await shopService.findSingleUserFollowDB(req?.user);
+    const result = await shopService.findSingleUserFollowDB(req?.user,req?.params?.shopId);
     res.send(successResponse(result, StatusCodes.OK, "Find user follow"));
   } catch (error) {
     next(error);

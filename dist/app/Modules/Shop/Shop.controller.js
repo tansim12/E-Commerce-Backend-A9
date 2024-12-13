@@ -99,8 +99,9 @@ const adminFindAllShop = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     }
 });
 const findSingleUserFollow = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const result = yield Shop_service_1.shopService.findSingleUserFollowDB(req === null || req === void 0 ? void 0 : req.user);
+        const result = yield Shop_service_1.shopService.findSingleUserFollowDB(req === null || req === void 0 ? void 0 : req.user, (_a = req === null || req === void 0 ? void 0 : req.params) === null || _a === void 0 ? void 0 : _a.shopId);
         res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "Find user follow"));
     }
     catch (error) {

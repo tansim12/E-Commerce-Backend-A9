@@ -337,10 +337,11 @@ const adminFindAllShopDB = async (
   };
 };
 
-const findSingleUserFollowDB = async (tokenUser: any) => {
+const findSingleUserFollowDB = async (tokenUser: any, shopId: string) => {
   const result = await prisma.shopFollow.findFirst({
     where: {
       userId: tokenUser?.id,
+      shopId,
     },
   });
   if (!result) {

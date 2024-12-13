@@ -30,7 +30,7 @@ router.post(
   shopController.shopFollowing
 );
 router.get(
-  "/user/shop-following",
+  "/user/shop-following/:shopId",
   authMiddleWare(UserRole.admin, UserRole.user, UserRole.vendor),
   shopController.findSingleUserFollow
 );

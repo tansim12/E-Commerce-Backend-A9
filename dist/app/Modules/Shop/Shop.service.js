@@ -306,10 +306,11 @@ const adminFindAllShopDB = (queryObj, options) => __awaiter(void 0, void 0, void
         result,
     };
 });
-const findSingleUserFollowDB = (tokenUser) => __awaiter(void 0, void 0, void 0, function* () {
+const findSingleUserFollowDB = (tokenUser, shopId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.shopFollow.findFirst({
         where: {
             userId: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id,
+            shopId,
         },
     });
     if (!result) {

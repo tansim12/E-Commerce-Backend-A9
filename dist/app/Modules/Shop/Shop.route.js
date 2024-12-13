@@ -16,7 +16,7 @@ router.put("/:shopId", (0, validationMiddleWare_1.default)(Shop_zodValidation_1.
 router.get("/", Shop_controller_1.shopController.findAllShopPublic);
 router.get("/:shopId", Shop_controller_1.shopController.findSingleShopPublic);
 router.post("/user/shop-following", (0, validationMiddleWare_1.default)(Shop_zodValidation_1.shopFollowSchema.createShopFollowSchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.user, client_1.UserRole.vendor), Shop_controller_1.shopController.shopFollowing);
-router.get("/user/shop-following", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.user, client_1.UserRole.vendor), Shop_controller_1.shopController.findSingleUserFollow);
+router.get("/user/shop-following/:shopId", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.user, client_1.UserRole.vendor), Shop_controller_1.shopController.findSingleUserFollow);
 router.put("/user/shop-review", (0, validationMiddleWare_1.default)(Shop_zodValidation_1.shopFollowSchema.createShopReviewSchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.user, client_1.UserRole.vendor), Shop_controller_1.shopController.shopReview);
 router.get("/vendor/vendor-my-shop", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor), Shop_controller_1.shopController.vendorFindHisShop);
 router.get("/admin/find-all-shops", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), Shop_controller_1.shopController.adminFindAllShop);

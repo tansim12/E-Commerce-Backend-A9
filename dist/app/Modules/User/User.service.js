@@ -139,6 +139,16 @@ const findMyProfileDB = (tokenUser) => __awaiter(void 0, void 0, void 0, functio
             createdAt: true,
             updatedAt: true,
             userProfile: true,
+            shopFollow: {
+                select: {
+                    shop: {
+                        select: {
+                            name: true,
+                            logo: true
+                        }
+                    }
+                }
+            }
         },
     });
     return user;
