@@ -10,5 +10,10 @@ router.get(
   authMiddleWare(UserRole.admin),
   analyticsController.adminAnalytics
 );
+router.get(
+  "/shop",
+  authMiddleWare(UserRole.vendor),
+  analyticsController.shopAnalytics
+);
 
 export const analyticsRoutes = router;

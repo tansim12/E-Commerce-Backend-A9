@@ -16,7 +16,16 @@ const successResponse_1 = require("../../Re-useable/successResponse");
 const adminAnalytics = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield Analytics_service_1.analyticsService.adminAnalyticsDB();
-        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "Find user follow"));
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "Find admin analytics"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const shopAnalytics = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield Analytics_service_1.analyticsService.shopAnalyticsDB(req === null || req === void 0 ? void 0 : req.user);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "shop analytics"));
     }
     catch (error) {
         next(error);
@@ -24,4 +33,5 @@ const adminAnalytics = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.analyticsController = {
     adminAnalytics,
+    shopAnalytics,
 };

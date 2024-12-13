@@ -6,7 +6,15 @@ import { successResponse } from "../../Re-useable/successResponse";
 const adminAnalytics: RequestHandler = async (req, res, next) => {
   try {
     const result = await analyticsService.adminAnalyticsDB();
-    res.send(successResponse(result, StatusCodes.OK, "Find user follow"));
+    res.send(successResponse(result, StatusCodes.OK, "Find admin analytics"));
+  } catch (error) {
+    next(error);
+  }
+};
+const shopAnalytics: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await analyticsService.shopAnalyticsDB(req?.user);
+    res.send(successResponse(result, StatusCodes.OK, "shop analytics"));
   } catch (error) {
     next(error);
   }
@@ -14,4 +22,5 @@ const adminAnalytics: RequestHandler = async (req, res, next) => {
 
 export const analyticsController = {
   adminAnalytics,
+  shopAnalytics,
 };

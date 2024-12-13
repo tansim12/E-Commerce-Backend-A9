@@ -10,4 +10,5 @@ const client_1 = require("@prisma/client");
 const Analytics_controller_1 = require("./Analytics.controller");
 const router = express_1.default.Router();
 router.get("/admin", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), Analytics_controller_1.analyticsController.adminAnalytics);
+router.get("/shop", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.vendor), Analytics_controller_1.analyticsController.shopAnalytics);
 exports.analyticsRoutes = router;
