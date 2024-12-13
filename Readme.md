@@ -1,59 +1,15 @@
-<!-- # Book Portal
+
+
+# E-Commerce
 
 ## Project Description
-The **Book Portal** is a backend service designed to manage a library's operations, including:
+The **E-Commerce** Application is designed to provide a complete online shopping experience for users, vendors, and administrators. It serves as a platform where users can browse and purchase products, vendors can manage their shops and inventories, and administrators can control and monitor the entire system. The application focuses on being intuitive, responsive, and secure, providing a seamless experience for all user roles. The core of this project is to build a scalable, high-performance system using modern web development technologies. It leverages Node.js and Express.js for the backend, React.js (or Next.js) for the front end, and PostgreSQL for data storage. The application integrates with third-party services for payments and file storage, ensuring a professional, enterprise-grade solution.
 
-- Managing the inventory of books (adding, updating, deleting books).
-- Managing library members (registering, updating, deleting members).
-- Borrowing and returning books.
-- Viewing overdue books and associated penalties.
-
-This API simplifies handling a library’s core operations and provides a secure and efficient way to track books and members.
-
-## Live Demo / URL
-The API is deployed and available at:
-
-[Live URL](https://a-8-prisma-sql.vercel.app/)
-
-## Technology Stack
-The key technologies and tools used in this project are:
-
-- **Node.js**: JavaScript runtime for building the backend.
-- **Express.js**: Web framework for building REST APIs.
-- **Prisma ORM**: Object-relational mapper for interacting with the PostgreSQL database.
-- **PostgreSQL**: Database for storing library information.
-- **TypeScript**: Strongly typed language that compiles to JavaScript.
-
-## Setup Instructions
-To set up and run this project locally, follow these steps:
-
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/tansim12/A-8-Prisma-SQL.git
-   cd A-8-Prisma-SQL
-
-2. **yarn install**
-3. **npx prisma migrate dev**
-4. **yarn dev** -->
-
-
-
-# Book Portal
-
-## Project Description
-The **Book Portal** is a comprehensive backend service for managing the core operations of a library. It provides a suite of tools for librarians to maintain an efficient and organized inventory and handle library members effectively. The key features include:
-
-- **Book Inventory Management**: Allows for adding, updating, and deleting books from the library’s collection.
-- **Member Management**: Facilitates the registration, updating, and deletion of library members.
-- **Borrowing and Returning System**: Tracks the borrowing and returning of books, ensuring accurate inventory records.
-- **Overdue and Penalty Tracking**: Helps identify overdue books and apply penalties, if applicable.
-
-This API is built to simplify library operations, providing a secure, reliable, and scalable solution for managing books and members.
 
 ## Live Demo / URL
 You can access the live API at:
 
-[Live URL](https://a-8-prisma-sql.vercel.app/)
+[Live URL](https://e-commerce-backend-virid-seven.vercel.app/)
 
 ## Technology Stack
 This project is built with a robust technology stack to ensure high performance and maintainability:
@@ -64,17 +20,17 @@ This project is built with a robust technology stack to ensure high performance 
 - **PostgreSQL**: Relational database used for structured data storage.
 - **TypeScript**: Superset of JavaScript that adds strong typing, improving code quality and maintainability.
 
-## Features
-- **CRUD Operations**: Easily perform Create, Read, Update, and Delete operations on books and members.
+<!-- ## Features
+- **CRUD Operations**: Easily perform Create, Read, Update, and Delete operations on product and other fields.
 - **Borrow and Return Management**: Smoothly handle borrowing and returning transactions, tracking due dates and book availability.
 - **Overdue Notifications and Penalties**: Automatically calculate and apply penalties for overdue books.
 - **Scalability**: Designed to scale and support libraries with a large volume of books and members.
-- **Data Validation**: Built with TypeScript for robust type-checking, reducing runtime errors.
+- **Data Validation**: Built with TypeScript for robust type-checking, reducing runtime errors. -->
 
 ## Setup Instructions
 To set up and run this project locally, follow these steps:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/tansim12/A-8-Prisma-SQL.git
+   git clone https://e-commerce-backend-virid-seven.vercel.app/
    cd A-8-Prisma-SQL
