@@ -100,7 +100,7 @@ const adminAnalyticsDB = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 //! shop analytics
 const shopAnalyticsDB = (tokenUser) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c;
     const findShop = yield ((_a = prisma_1.default.user) === null || _a === void 0 ? void 0 : _a.findUnique({
         where: {
             id: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id,
@@ -115,10 +115,10 @@ const shopAnalyticsDB = (tokenUser) => __awaiter(void 0, void 0, void 0, functio
             },
         },
     }));
-    if (!findShop) {
+    if (!((_b = findShop === null || findShop === void 0 ? void 0 : findShop.shop) === null || _b === void 0 ? void 0 : _b.id)) {
         throw new AppError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, "Shop not found");
     }
-    const shopId = (_b = findShop === null || findShop === void 0 ? void 0 : findShop.shop) === null || _b === void 0 ? void 0 : _b.id;
+    const shopId = (_c = findShop === null || findShop === void 0 ? void 0 : findShop.shop) === null || _c === void 0 ? void 0 : _c.id;
     // Total revenue
     const totalRevenueData = yield prisma_1.default.payment.aggregate({
         _sum: {

@@ -126,10 +126,11 @@ const shopAnalyticsDB = async (tokenUser: any) => {
       },
     },
   });
-  if (!findShop) {
+  if (!findShop?.shop?.id) {
     throw new AppError(StatusCodes.NOT_FOUND, "Shop not found");
   }
   const shopId = findShop?.shop?.id;
+  
   // Total revenue
   const totalRevenueData = await prisma.payment.aggregate({
     _sum: {
