@@ -108,6 +108,15 @@ const findSingleUserFollow = (req, res, next) => __awaiter(void 0, void 0, void 
         next(error);
     }
 });
+const isShopExist = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield Shop_service_1.shopService.isShopExistDb(req === null || req === void 0 ? void 0 : req.user);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "Find shop"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
 exports.shopController = {
     createShop,
     findAllShopPublic,
@@ -118,4 +127,5 @@ exports.shopController = {
     updateShopInfo,
     adminFindAllShop,
     findSingleUserFollow,
+    isShopExist,
 };

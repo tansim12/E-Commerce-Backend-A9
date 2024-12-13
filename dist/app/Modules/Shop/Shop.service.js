@@ -321,6 +321,33 @@ const findSingleUserFollowDB = (tokenUser, shopId) => __awaiter(void 0, void 0, 
     }
     return result;
 });
+const isShopExistDb = (tokenUser) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const findShop = yield ((_a = prisma_1.default.user) === null || _a === void 0 ? void 0 : _a.findUnique({
+        where: {
+            id: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id,
+            isDelete: false,
+            role: client_1.UserRole.vendor,
+        },
+        select: {
+            shop: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    }));
+    if (!((_b = findShop === null || findShop === void 0 ? void 0 : findShop.shop) === null || _b === void 0 ? void 0 : _b.id)) {
+        return {
+            status: 400,
+            message: "Please shop Create First",
+        };
+    }
+    return {
+        status: 200,
+        message: "Shop Exist",
+    };
+});
 exports.shopService = {
     crateShopDB,
     findAllShopPublicDB,
@@ -331,4 +358,5 @@ exports.shopService = {
     updateShopInfoDB,
     adminFindAllShopDB,
     findSingleUserFollowDB,
+    isShopExistDb,
 };

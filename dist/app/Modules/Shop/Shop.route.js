@@ -20,4 +20,5 @@ router.get("/user/shop-following/:shopId", (0, authMiddleware_1.authMiddleWare)(
 router.put("/user/shop-review", (0, validationMiddleWare_1.default)(Shop_zodValidation_1.shopFollowSchema.createShopReviewSchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.user, client_1.UserRole.vendor), Shop_controller_1.shopController.shopReview);
 router.get("/vendor/vendor-my-shop", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor), Shop_controller_1.shopController.vendorFindHisShop);
 router.get("/admin/find-all-shops", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), Shop_controller_1.shopController.adminFindAllShop);
+router.get("/vendor/check/isExist-shop", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.vendor), Shop_controller_1.shopController.isShopExist);
 exports.shopRouter = router;

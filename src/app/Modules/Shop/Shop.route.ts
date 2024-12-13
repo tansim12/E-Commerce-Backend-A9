@@ -51,5 +51,10 @@ router.get(
   authMiddleWare(UserRole.admin),
   shopController.adminFindAllShop
 );
+router.get(
+  "/vendor/check/isExist-shop",
+  authMiddleWare(UserRole.vendor),
+  shopController.isShopExist
+);
 
 export const shopRouter = router;

@@ -103,8 +103,19 @@ const adminFindAllShop: RequestHandler = async (req, res, next) => {
 };
 const findSingleUserFollow: RequestHandler = async (req, res, next) => {
   try {
-    const result = await shopService.findSingleUserFollowDB(req?.user,req?.params?.shopId);
+    const result = await shopService.findSingleUserFollowDB(
+      req?.user,
+      req?.params?.shopId
+    );
     res.send(successResponse(result, StatusCodes.OK, "Find user follow"));
+  } catch (error) {
+    next(error);
+  }
+};
+const isShopExist: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await shopService.isShopExistDb(req?.user);
+    res.send(successResponse(result, StatusCodes.OK, "Find shop"));
   } catch (error) {
     next(error);
   }
@@ -120,4 +131,5 @@ export const shopController = {
   updateShopInfo,
   adminFindAllShop,
   findSingleUserFollow,
+  isShopExist,
 };
