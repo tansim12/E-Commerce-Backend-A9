@@ -27,6 +27,97 @@ This project is built with a robust technology stack to ensure high performance 
 - **Scalability**: Designed to scale and support libraries with a large volume of books and members.
 - **Data Validation**: Built with TypeScript for robust type-checking, reducing runtime errors. -->
 
+
+
+ **Clone the repository**
+
+   ```sh
+   git clone 
+
+   cd A-9-Postgress-Prisma
+  
+```
+📦 Install Dependencies
+
+---
+```bash
+
+$ yarn install
+
+```
+# ⚙️ Configure Environment Variables
+## Create a `.env` file in the root of the project and add the following environment variables:
+
+```bash
+
+NODE_ENV=
+BASE_URL=
+FRONTEND_URL=
+DB_NAME=
+DATABASE_URL=
+PORT=5000
+BCRYPT_NUMBER=12
+SECRET_ACCESS_TOKEN=
+SECRET_REFRESH_TOKEN=
+SECRET_ACCESS_TOKEN_TIME=10d
+SECRET_REFRESH_TOKEN_TIME=365d
+AAMAR_PAY_SEARCH_TNX_BASE_URL=
+AAMAR_PAY_STORE_ID=aamarpaytest,
+AAMAR_PAY_SIGNATURE_KEY= 
+AAMAR_PAY_HIT_API= https://sandbox.aamarpay.com/jsonpost.php
+EMAIL_APP_PASSWORD=
+
+
+DATABASE_URL=
+NODE_ENV="development"
+PORT=5000
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+JWT_SECRET=
+EXPIRES_IN=
+REFRESH_TOKEN_SECRET=
+REFRESH_TOKEN_EXPIRES_IN=
+RESET_PASS_TOKEN="YOUR TOKEN SECRET"
+RESET_PASS_TOKEN_EXPIRES_IN=
+RESET_PASS_LINK="http://localhost:5000/forget-password/"
+EMAIL= "your email"
+APP_PASS= 
+STORE_ID="SSL STORE ID"
+STORE_PASS= "SSL STORE PASSWORD"
+FRONTEND_URL="http://localhost:3000"
+SUCCESS_URL= "http://localhost:3000/success"
+CANCEL_URL= "http://localhost:3000/cancel"
+FAIL_URL= "http://localhost:3000/fail"
+SSL_PAYMENT_API= "PAYMENT API"
+SSL_VALIDATIOIN_API= "PAYMENT VALIDATION API"
+
+BASE_URL=https://e-commerce-backend-virid-seven.vercel.app
+FRONTEND_URL=https://e-commerce-next-a9.vercel.app
+
+AAMAR_PAY_SEARCH_TNX_BASE_URL=https://sandbox.aamarpay.com/api/v1/trxcheck/request.php
+AAMAR_PAY_STORE_ID=aamarpaytest
+AAMAR_PAY_SIGNATURE_KEY=
+AAMAR_PAY_HIT_API=https://sandbox.aamarpay.com/jsonpost.php
+
+
+
+```
+# Running the app
+
+```TYPESCRIPT
+# watch mode
+$ yarn run start
+
+
+```
+The server should be running on http://localhost:5000.
+
+
+<!-- . -->
+
+
 ## Setup Instructions
 To set up and run this project locally, follow these steps:
 
