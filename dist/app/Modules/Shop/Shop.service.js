@@ -80,8 +80,12 @@ const findSingleShopPublicDB = (shopId, queryObj, options) => __awaiter(void 0, 
                     },
                 },
             },
-            shopFollow: true,
-            _count: true,
+            _count: {
+                select: {
+                    shopFollow: true,
+                    product: true
+                }
+            },
             product: {
                 skip,
                 take: limit,

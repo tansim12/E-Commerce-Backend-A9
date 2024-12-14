@@ -62,8 +62,12 @@ const findSingleShopPublicDB = async (
           },
         },
       },
-      shopFollow: true,
-      _count: true,
+      _count: {
+        select:{
+          shopFollow:true,
+          product:true
+        }
+      },
       product: {
         skip,
         take: limit,
