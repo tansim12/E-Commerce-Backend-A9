@@ -64,5 +64,15 @@ router.get(
   "/public/payment/review-info/:productId",
   productController.findSingleProductAllReview
 );
+router.get(
+  "/vendor/find-his-all-product",
+  authMiddleWare(UserRole.vendor),
+  productController.vendorFindHisAllProduct
+);
+router.get(
+  "/vendor/find-one-product/:productId",
+  authMiddleWare(UserRole.vendor),
+  productController.vendorFindSingleProduct
+);
 
 export const productRoutes = router;

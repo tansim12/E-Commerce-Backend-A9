@@ -872,6 +872,33 @@ const findSingleProductAllReviewDB = (productId) => __awaiter(void 0, void 0, vo
     });
     return result;
 });
+const vendorFindHisAllProductDB = (tokenUser) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = prisma_1.default.product.findMany({
+        where: {
+            shop: {
+                vendorId: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id,
+            },
+            isDelete: false,
+        },
+        select: {
+            id: true,
+            productName: true,
+        },
+    });
+    return result;
+});
+const vendorFindSingleProductDB = (tokenUser, productId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = prisma_1.default.product.findUniqueOrThrow({
+        where: {
+            id: productId,
+            shop: {
+                vendorId: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id,
+            },
+            isDelete: false,
+        },
+    });
+    return result;
+});
 exports.productService = {
     createProductDB,
     updateProductDB,
@@ -887,4 +914,6 @@ exports.productService = {
     productReviewByPaymentDB,
     vendorOrShopRepliedReviewsDB,
     findSingleProductAllReviewDB,
+    vendorFindHisAllProductDB,
+    vendorFindSingleProductDB,
 };

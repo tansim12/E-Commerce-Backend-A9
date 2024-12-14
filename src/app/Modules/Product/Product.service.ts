@@ -978,6 +978,34 @@ const findSingleProductAllReviewDB = async (productId: string) => {
   return result;
 };
 
+const vendorFindHisAllProductDB = async (tokenUser: any) => {
+  const result = prisma.product.findMany({
+    where: {
+      shop: {
+        vendorId: tokenUser?.id,
+      },
+      isDelete: false,
+    },
+    select: {
+      id: true,
+      productName: true,
+    },
+  });
+  return result;
+};
+const vendorFindSingleProductDB = async (tokenUser: any, productId: string) => {
+  const result = prisma.product.findUniqueOrThrow({
+    where: {
+      id: productId,
+      shop: {
+        vendorId: tokenUser?.id,
+      },
+      isDelete: false,
+    },
+  });
+  return result;
+};
+
 export const productService = {
   createProductDB,
   updateProductDB,
@@ -993,4 +1021,6 @@ export const productService = {
   productReviewByPaymentDB,
   vendorOrShopRepliedReviewsDB,
   findSingleProductAllReviewDB,
+  vendorFindHisAllProductDB,
+  vendorFindSingleProductDB,
 };

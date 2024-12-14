@@ -186,6 +186,29 @@ const findSingleProductAllReview: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const vendorFindHisAllProduct: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await productService.vendorFindHisAllProductDB(req?.user);
+    res.send(
+      successResponse(result, StatusCodes.OK, "Vendor Find his all product")
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+const vendorFindSingleProduct: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await productService.vendorFindSingleProductDB(
+      req?.user,
+      req?.params?.productId
+    );
+    res.send(
+      successResponse(result, StatusCodes.OK, "Vendor Find one product")
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const productController = {
   createProduct,
@@ -202,4 +225,6 @@ export const productController = {
   productReviewByPayment,
   vendorOrShopRepliedReviews,
   findSingleProductAllReview,
+  vendorFindHisAllProduct,
+  vendorFindSingleProduct,
 };

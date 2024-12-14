@@ -26,4 +26,6 @@ router.post("/relevant/relevant-products", Product_controller_1.productControlle
 router.put("/payment/review/:paymentId", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.user, client_1.UserRole.admin, client_1.UserRole.vendor), Product_controller_1.productController.productReviewByPayment);
 router.post("/payment/review-replied", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor), Product_controller_1.productController.vendorOrShopRepliedReviews);
 router.get("/public/payment/review-info/:productId", Product_controller_1.productController.findSingleProductAllReview);
+router.get("/vendor/find-his-all-product", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.vendor), Product_controller_1.productController.vendorFindHisAllProduct);
+router.get("/vendor/find-one-product/:productId", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.vendor), Product_controller_1.productController.vendorFindSingleProduct);
 exports.productRoutes = router;

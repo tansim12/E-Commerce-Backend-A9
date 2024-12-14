@@ -161,6 +161,25 @@ const findSingleProductAllReview = (req, res, next) => __awaiter(void 0, void 0,
         next(error);
     }
 });
+const vendorFindHisAllProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield Product_service_1.productService.vendorFindHisAllProductDB(req === null || req === void 0 ? void 0 : req.user);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "Vendor Find his all product"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const vendorFindSingleProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const result = yield Product_service_1.productService.vendorFindSingleProductDB(req === null || req === void 0 ? void 0 : req.user, (_a = req === null || req === void 0 ? void 0 : req.params) === null || _a === void 0 ? void 0 : _a.productId);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "Vendor Find one product"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
 exports.productController = {
     createProduct,
     updateProduct,
@@ -176,4 +195,6 @@ exports.productController = {
     productReviewByPayment,
     vendorOrShopRepliedReviews,
     findSingleProductAllReview,
+    vendorFindHisAllProduct,
+    vendorFindSingleProduct,
 };
