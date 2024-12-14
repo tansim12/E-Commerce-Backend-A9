@@ -83,8 +83,8 @@ const findSingleShopPublicDB = (shopId, queryObj, options) => __awaiter(void 0, 
             _count: {
                 select: {
                     shopFollow: true,
-                    product: true
-                }
+                    product: true,
+                },
             },
             product: {
                 skip,
@@ -333,8 +333,9 @@ const isShopExistDb = (tokenUser) => __awaiter(void 0, void 0, void 0, function*
             isDelete: false,
             role: client_1.UserRole.vendor,
             shop: {
-                isDelete: false
-            }
+                isDelete: false,
+                isBlocked: false,
+            },
         },
         select: {
             shop: {

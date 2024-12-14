@@ -63,10 +63,10 @@ const findSingleShopPublicDB = async (
         },
       },
       _count: {
-        select:{
-          shopFollow:true,
-          product:true
-        }
+        select: {
+          shopFollow: true,
+          product: true,
+        },
       },
       product: {
         skip,
@@ -363,9 +363,10 @@ const isShopExistDb = async (tokenUser: any) => {
       id: tokenUser?.id,
       isDelete: false,
       role: UserRole.vendor,
-      shop:{
-        isDelete:false
-      }
+      shop: {
+        isDelete: false,
+        isBlocked: false,
+      },
     },
     select: {
       shop: {
