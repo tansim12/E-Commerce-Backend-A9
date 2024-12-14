@@ -332,6 +332,9 @@ const isShopExistDb = (tokenUser) => __awaiter(void 0, void 0, void 0, function*
             id: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id,
             isDelete: false,
             role: client_1.UserRole.vendor,
+            shop: {
+                isDelete: false
+            }
         },
         select: {
             shop: {

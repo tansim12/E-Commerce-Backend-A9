@@ -103,7 +103,7 @@ const findVendorShopAllProductsDB = async (
       isDelete: false,
       shop: {
         vendorId: tokenUser?.id,
-        isDelete: false,
+        // isDelete: false,
       },
     },
     select: {

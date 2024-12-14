@@ -363,6 +363,9 @@ const isShopExistDb = async (tokenUser: any) => {
       id: tokenUser?.id,
       isDelete: false,
       role: UserRole.vendor,
+      shop:{
+        isDelete:false
+      }
     },
     select: {
       shop: {

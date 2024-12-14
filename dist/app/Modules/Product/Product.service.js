@@ -112,7 +112,7 @@ const findVendorShopAllProductsDB = (tokenUser, queryObj, options) => __awaiter(
             isDelete: false,
             shop: {
                 vendorId: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id,
-                isDelete: false,
+                // isDelete: false,
             },
         },
         select: {
