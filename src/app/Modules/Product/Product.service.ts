@@ -509,7 +509,7 @@ const publicPromoCheckDB = async (payload: any) => {
       // Flash Sale শর্ত
       isActivePromo: true,
       promo: {
-        contains: payload?.promo,
+        equals: payload?.promo,
       },
       flashSaleDiscount: {
         not: null,

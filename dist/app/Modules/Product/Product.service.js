@@ -452,7 +452,7 @@ const publicPromoCheckDB = (payload) => __awaiter(void 0, void 0, void 0, functi
             // Flash Sale শর্ত
             isActivePromo: true,
             promo: {
-                contains: payload === null || payload === void 0 ? void 0 : payload.promo,
+                equals: payload === null || payload === void 0 ? void 0 : payload.promo,
             },
             flashSaleDiscount: {
                 not: null,
