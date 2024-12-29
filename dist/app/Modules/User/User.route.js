@@ -12,17 +12,11 @@ const validationMiddleWare_1 = __importDefault(require("../../middleware/validat
 const User_ZodValidation_1 = require("./User.ZodValidation");
 const router = express_1.default.Router();
 //! upload file
-// multerUpload.single("image"),
-//   jsonDataSetMiddleware,
 router.get("/", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), User_controller_1.userController.getAllUsers);
 router.get("/:userId", User_controller_1.userController.getSingleUser);
-// router.put(
-//   "/update-info/:userId",
-//   authMiddleWare(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-//   validationMiddleWare(userZodValidation.updateUserZodSchema),
-//   userController.adminUpdateUser
-// );
 router.get("/find/my-profile", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.user, client_1.UserRole.admin, client_1.UserRole.vendor), User_controller_1.userController.findMyProfile);
 router.put("/update-my-profile", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.user, client_1.UserRole.admin, client_1.UserRole.vendor), User_controller_1.userController.updateMyProfile);
 router.put("/admin-update-user/:userId", (0, validationMiddleWare_1.default)(User_ZodValidation_1.userZodValidation.updateUserZodSchema), (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin), User_controller_1.userController.adminUpdateUser);
+router.post("/wishList", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor, client_1.UserRole.user), User_controller_1.userController.createWishlist);
+router.get("/wishList/all", (0, authMiddleware_1.authMiddleWare)(client_1.UserRole.admin, client_1.UserRole.vendor, client_1.UserRole.user), User_controller_1.userController.findUserAllWishList);
 exports.userRouter = router;

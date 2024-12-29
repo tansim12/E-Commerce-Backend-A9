@@ -2,7 +2,10 @@ import { RequestHandler } from "express";
 import { userService } from "./User.service";
 import { successResponse } from "../../Re-useable/successResponse";
 import pick from "../../shared/pick";
-import { userFilterAbleFields } from "./User.const";
+import {
+  userFilterAbleFields,
+  userWishListFilterAbleFields,
+} from "./User.const";
 import { StatusCodes } from "http-status-codes";
 
 const getAllUsers: RequestHandler = async (req, res, next) => {
@@ -81,10 +84,35 @@ const getSingleUser: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+const createWishlist: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await userService.createWishlistDB(req?.user, req?.body);
+    res.send(successResponse(result, StatusCodes.OK, "find  user wishlist"));
+  } catch (error) {
+    next(error);
+  }
+};
+const findUserAllWishList: RequestHandler = async (req, res, next) => {
+  try {
+    const filters = pick(req.query, userWishListFilterAbleFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await userService.findUserAllWishListDB(
+      filters,
+      options,
+      req?.user
+    );
+    res.send(successResponse(result, StatusCodes.OK, "find  user wishlist"));
+  } catch (error) {
+    next(error);
+  }
+};
 export const userController = {
   getAllUsers,
   adminUpdateUser,
   findMyProfile,
   updateMyProfile,
   getSingleUser,
+  createWishlist,
+  findUserAllWishList,
 };

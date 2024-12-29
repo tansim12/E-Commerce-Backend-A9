@@ -3,7 +3,10 @@ const prisma = new PrismaClient();
 import Bcrypt from "bcrypt";
 import { IPaginationOptions } from "../../interface/pagination";
 import { paginationHelper } from "../../helper/paginationHelper";
-import { userSearchAbleFields } from "./User.const";
+import {
+  userSearchAbleFields,
+  userWishListSearchAbleFields,
+} from "./User.const";
 
 import { StatusCodes } from "http-status-codes";
 import AppError from "../../Error-Handler/AppError";
@@ -128,16 +131,16 @@ const findMyProfileDB = async (tokenUser: any) => {
       createdAt: true,
       updatedAt: true,
       userProfile: true,
-      shopFollow:{
-        select:{
-          shop:{
-            select:{
-              name:true,
-              logo:true
-            }
-          }
-        }
-      }
+      shopFollow: {
+        select: {
+          shop: {
+            select: {
+              name: true,
+              logo: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -197,10 +200,88 @@ const getSingleUserDB = async (paramsId: string) => {
   });
   return result;
 };
+const createWishlistDB = async (tokenUser: any, payload: any) => {
+  const result = await prisma.wishlist.create({
+    data: {
+      userId: tokenUser?.id,
+      productId: payload?.productId,
+    },
+  });
+  return result;
+};
+const findUserAllWishListDB = async (
+  queryObj: any,
+  options: IPaginationOptions,
+  tokenUser: any
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = queryObj;
+
+  const andCondition = [];
+  if (queryObj.searchTerm) {
+    andCondition.push({
+      OR: userWishListSearchAbleFields?.map((field) => ({
+        [field]: {
+          contains: queryObj.searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+  if (Object.keys(filterData).length > 0) {
+    andCondition.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: filterData[key as never],
+        },
+      })),
+    });
+  }
+
+  const whereConditions: Prisma.UserWhereInput = { AND: andCondition as any };
+
+  const result = await prisma.wishlist.findMany({
+    where: {
+      ...(whereConditions as any),
+      userId: tokenUser?.id,
+    },
+    select: {
+      product: true,
+    },
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
+  });
+
+  const total = await prisma.wishlist.count({
+    where: {
+      ...(whereConditions as any),
+      userId: tokenUser?.id,
+    },
+  });
+  const meta = {
+    page,
+    limit,
+    total,
+  };
+  return {
+    meta,
+    result,
+  };
+};
 export const userService = {
   getAllUsersDB,
   adminUpdateUserDB,
   findMyProfileDB,
   updateMyProfileDB,
   getSingleUserDB,
+  findUserAllWishListDB,
+  createWishlistDB,
 };

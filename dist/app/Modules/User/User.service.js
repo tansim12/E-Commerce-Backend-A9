@@ -144,11 +144,11 @@ const findMyProfileDB = (tokenUser) => __awaiter(void 0, void 0, void 0, functio
                     shop: {
                         select: {
                             name: true,
-                            logo: true
-                        }
-                    }
-                }
-            }
+                            logo: true,
+                        },
+                    },
+                },
+            },
         },
     });
     return user;
@@ -201,10 +201,73 @@ const getSingleUserDB = (paramsId) => __awaiter(void 0, void 0, void 0, function
     });
     return result;
 });
+const createWishlistDB = (tokenUser, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma.wishlist.create({
+        data: {
+            userId: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id,
+            productId: payload === null || payload === void 0 ? void 0 : payload.productId,
+        },
+    });
+    return result;
+});
+const findUserAllWishListDB = (queryObj, options, tokenUser) => __awaiter(void 0, void 0, void 0, function* () {
+    const { page, limit, skip } = paginationHelper_1.paginationHelper.calculatePagination(options);
+    const { searchTerm } = queryObj, filterData = __rest(queryObj, ["searchTerm"]);
+    const andCondition = [];
+    if (queryObj.searchTerm) {
+        andCondition.push({
+            OR: User_const_1.userWishListSearchAbleFields === null || User_const_1.userWishListSearchAbleFields === void 0 ? void 0 : User_const_1.userWishListSearchAbleFields.map((field) => ({
+                [field]: {
+                    contains: queryObj.searchTerm,
+                    mode: "insensitive",
+                },
+            })),
+        });
+    }
+    if (Object.keys(filterData).length > 0) {
+        andCondition.push({
+            AND: Object.keys(filterData).map((key) => ({
+                [key]: {
+                    equals: filterData[key],
+                },
+            })),
+        });
+    }
+    const whereConditions = { AND: andCondition };
+    const result = yield prisma.wishlist.findMany({
+        where: Object.assign(Object.assign({}, whereConditions), { userId: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id }),
+        select: {
+            product: true,
+        },
+        skip,
+        take: limit,
+        orderBy: options.sortBy && options.sortOrder
+            ? {
+                [options.sortBy]: options.sortOrder,
+            }
+            : {
+                createdAt: "desc",
+            },
+    });
+    const total = yield prisma.wishlist.count({
+        where: Object.assign(Object.assign({}, whereConditions), { userId: tokenUser === null || tokenUser === void 0 ? void 0 : tokenUser.id }),
+    });
+    const meta = {
+        page,
+        limit,
+        total,
+    };
+    return {
+        meta,
+        result,
+    };
+});
 exports.userService = {
     getAllUsersDB,
     adminUpdateUserDB,
     findMyProfileDB,
     updateMyProfileDB,
     getSingleUserDB,
+    findUserAllWishListDB,
+    createWishlistDB,
 };

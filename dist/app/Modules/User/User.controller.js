@@ -72,10 +72,32 @@ const getSingleUser = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         next(error);
     }
 });
+const createWishlist = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield User_service_1.userService.createWishlistDB(req === null || req === void 0 ? void 0 : req.user, req === null || req === void 0 ? void 0 : req.body);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "find  user wishlist"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const findUserAllWishList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const filters = (0, pick_1.default)(req.query, User_const_1.userWishListFilterAbleFields);
+        const options = (0, pick_1.default)(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+        const result = yield User_service_1.userService.findUserAllWishListDB(filters, options, req === null || req === void 0 ? void 0 : req.user);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "find  user wishlist"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
 exports.userController = {
     getAllUsers,
     adminUpdateUser,
     findMyProfile,
     updateMyProfile,
     getSingleUser,
+    createWishlist,
+    findUserAllWishList,
 };

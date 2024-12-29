@@ -8,18 +8,10 @@ import { userZodValidation } from "./User.ZodValidation";
 const router = express.Router();
 
 //! upload file
-// multerUpload.single("image"),
-//   jsonDataSetMiddleware,
 
 router.get("/", authMiddleWare(UserRole.admin), userController.getAllUsers);
 router.get("/:userId", userController.getSingleUser);
 
-// router.put(
-//   "/update-info/:userId",
-//   authMiddleWare(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-//   validationMiddleWare(userZodValidation.updateUserZodSchema),
-//   userController.adminUpdateUser
-// );
 router.get(
   "/find/my-profile",
   authMiddleWare(UserRole.user, UserRole.admin, UserRole.vendor),
@@ -35,6 +27,16 @@ router.put(
   validationMiddleWare(userZodValidation.updateUserZodSchema),
   authMiddleWare(UserRole.admin),
   userController.adminUpdateUser
+);
+router.post(
+  "/wishList",
+  authMiddleWare(UserRole.admin, UserRole.vendor, UserRole.user),
+  userController.createWishlist
+);
+router.get(
+  "/wishList/all",
+  authMiddleWare(UserRole.admin, UserRole.vendor, UserRole.user),
+  userController.findUserAllWishList
 );
 
 export const userRouter = router;
