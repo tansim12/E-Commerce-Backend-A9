@@ -31,7 +31,27 @@ const shopAnalytics = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         next(error);
     }
 });
+const createNewsletter = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield Analytics_service_1.analyticsService.createNewsletterDB(req === null || req === void 0 ? void 0 : req.body);
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "create newsletter"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const findAllNewsLetterEmail = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield Analytics_service_1.analyticsService.findAllNewsLetterEmailDB();
+        res.send((0, successResponse_1.successResponse)(result, http_status_codes_1.StatusCodes.OK, "find all newsletter"));
+    }
+    catch (error) {
+        next(error);
+    }
+});
 exports.analyticsController = {
     adminAnalytics,
     shopAnalytics,
+    createNewsletter,
+    findAllNewsLetterEmail,
 };

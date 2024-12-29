@@ -130,7 +130,7 @@ const shopAnalyticsDB = async (tokenUser: any) => {
     throw new AppError(StatusCodes.NOT_FOUND, "Shop not found");
   }
   const shopId = findShop?.shop?.id;
-  
+
   // Total revenue
   const totalRevenueData = await prisma.payment.aggregate({
     _sum: {
@@ -196,7 +196,6 @@ const shopAnalyticsDB = async (tokenUser: any) => {
     },
   });
 
- 
   return {
     totalRevenueData,
     revenueByMonth,
@@ -206,4 +205,24 @@ const shopAnalyticsDB = async (tokenUser: any) => {
   };
 };
 
-export const analyticsService = { adminAnalyticsDB, shopAnalyticsDB };
+const createNewsletterDB = async (payload: any) => {
+  const result = await prisma.newsletter.create({
+    data: payload,
+  });
+  return result;
+};
+const findAllNewsLetterEmailDB = async () => {
+  const result = await prisma.newsletter.findMany({
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
+  return result;
+};
+
+export const analyticsService = {
+  adminAnalyticsDB,
+  shopAnalyticsDB,
+  createNewsletterDB,
+  findAllNewsLetterEmailDB,
+};

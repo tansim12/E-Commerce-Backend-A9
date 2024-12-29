@@ -15,5 +15,11 @@ router.get(
   authMiddleWare(UserRole.vendor),
   analyticsController.shopAnalytics
 );
+router.post("/newsletter", analyticsController.createNewsletter);
+router.get(
+  "/newsletter",
+  authMiddleWare(UserRole.admin),
+  analyticsController.findAllNewsLetterEmail
+);
 
 export const analyticsRoutes = router;

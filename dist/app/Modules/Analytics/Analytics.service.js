@@ -185,4 +185,23 @@ const shopAnalyticsDB = (tokenUser) => __awaiter(void 0, void 0, void 0, functio
         totalFlashSaleProducts,
     };
 });
-exports.analyticsService = { adminAnalyticsDB, shopAnalyticsDB };
+const createNewsletterDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.newsletter.create({
+        data: payload,
+    });
+    return result;
+});
+const findAllNewsLetterEmailDB = () => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.newsletter.findMany({
+        orderBy: {
+            updatedAt: "desc",
+        },
+    });
+    return result;
+});
+exports.analyticsService = {
+    adminAnalyticsDB,
+    shopAnalyticsDB,
+    createNewsletterDB,
+    findAllNewsLetterEmailDB,
+};
